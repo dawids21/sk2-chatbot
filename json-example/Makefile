@@ -1,7 +1,7 @@
 HEADERS=cJSON.h
 FILES=main.c cJSON.c
 
-main_file: $(FILES) $(HEADERS)
+main: $(FILES) $(HEADERS)
 	gcc -Wall -o main $(FILES)
 
 .PHONY: clean

@@ -2,7 +2,7 @@
 #include <malloc.h>
 #include "./cJSON.h"
 
-void parseJson()
+void parse_json()
 {
     char json[] = "{\"operation\": \"/login\", \"username\": \"dawid\", \"password\": \"stasiak\"}";
     cJSON *data = cJSON_Parse(json);
@@ -13,7 +13,7 @@ void parseJson()
     cJSON_Delete(data);
 }
 
-void createJson()
+void create_json()
 {
     char token[] = "1234567890";
     cJSON *json = cJSON_CreateObject();
@@ -26,7 +26,7 @@ void createJson()
 
 int main(int argc, char const *argv[])
 {
-    parseJson();
-    createJson();
+    parse_json();
+    create_json();
     return 0;
 }
