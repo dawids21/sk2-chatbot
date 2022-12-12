@@ -18,8 +18,8 @@ typedef struct
     bool has_data;
 } request;
 
-request parse_request(char *raw, int length);
-void destroy_request(request request);
+request *get_request(int socket);
+void destroy_request(request *request);
 char *get_resposne(http_status status, cJSON *payload);
 
 #endif
