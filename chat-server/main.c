@@ -9,6 +9,16 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <pthread.h>
+#include <errno.h>
+#include <signal.h>
+
+static int serverSocket;
+
+void int_handler(int sign)
+{
+    shutdown(serverSocket, SHUT_RD);
+    close(serverSocket);
+}
 
 bool is_operation(request *request, char *method, char *path)
 {
@@ -83,12 +93,15 @@ void *socketThread(void *arg)
 
 int main(int argc, char const *argv[])
 {
-    int serverSocket, newSocket;
+    signal(SIGINT, int_handler);
+    int newSocket;
     struct sockaddr_in serverAddr;
     struct sockaddr_storage serverStorage;
     socklen_t addr_size;
 
     serverSocket = socket(PF_INET, SOCK_STREAM, 0);
+    const int one = 1;
+    setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(one));
     serverAddr.sin_family = AF_INET;
     serverAddr.sin_port = htons(1100);
     serverAddr.sin_addr.s_addr = htonl(INADDR_ANY);
@@ -105,6 +118,10 @@ int main(int argc, char const *argv[])
     {
         addr_size = sizeof serverStorage;
         newSocket = accept(serverSocket, (struct sockaddr *)&serverStorage, &addr_size);
+        if (newSocket == -1)
+        {
+            break;
+        }
         if (pthread_create(&thread_id, NULL, socketThread, &newSocket) != 0)
             printf("Failed to create thread\n");
 
