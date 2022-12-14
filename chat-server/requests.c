@@ -63,7 +63,7 @@ request *get_request(int socket)
     result->has_auth = false;
     for (int i = 0; i < num_headers; i++)
     {
-        if (strncmp("authorization", headers[i].name, headers[i].name_len) == 0)
+        if (strncmp("Authorization", headers[i].name, headers[i].name_len) == 0)
         {
             result->auth = malloc(headers[i].value_len + 1);
             strncpy(result->auth, headers[i].value, headers[i].value_len);
@@ -112,18 +112,18 @@ char *get_resposne(http_status status, cJSON *payload)
     {
         free(body);
         body = cJSON_Print(payload);
-        response = malloc(sizeof(char) * (120 + strlen(body)));
+        response = malloc(sizeof(char) * (160 + strlen(body)));
     }
     else
     {
-        response = malloc(sizeof(char) * 120);
+        response = malloc(sizeof(char) * 160);
     }
     char *status_str;
     if (status == HTTP_OK)
     {
         status_str = "200 OK";
     }
-    sprintf(response, "HTTP/1.1 %s\r\nAccess-Control-Allow-Origin: http://localhost:3000\r\nContent-Type: application/json\r\n\r\n%s", status_str, body);
+    sprintf(response, "HTTP/1.1 %s\r\nAccess-Control-Allow-Origin: http://localhost:3000\r\nAccess-Control-Allow-Headers: *\r\nContent-Type: application/json\r\n\r\n%s", status_str, body);
     free(body);
     return response;
 }

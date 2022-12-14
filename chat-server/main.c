@@ -1,4 +1,5 @@
 #include "requests.h"
+#include "cJSON.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/socket.h>
@@ -9,9 +10,55 @@
 #include <unistd.h>
 #include <pthread.h>
 
+bool is_operation(request *request, char *method, char *path)
+{
+    if (strcmp(request->method, method) == 0 && strcmp(request->path, path) == 0)
+    {
+        return true;
+    }
+    return false;
+}
+
+char *handle_request(request *request)
+{
+    cJSON *request_json = NULL;
+    if (request->has_data)
+    {
+        request_json = cJSON_Parse(request->data);
+    }
+
+    char *response = NULL;
+    cJSON *response_json = NULL;
+    if (strcmp(request->method, "OPTIONS") == 0)
+    {
+        response = get_resposne(HTTP_OK, NULL);
+    }
+    else if (is_operation(request, "POST", "/hello"))
+    {
+        response_json = cJSON_CreateObject();
+        cJSON_AddStringToObject(response_json, "response", "Hello, World!");
+        response = get_resposne(HTTP_OK, response_json);
+    }
+    else
+    {
+        response = get_resposne(HTTP_OK, NULL);
+    }
+    if (response_json != NULL)
+    {
+        cJSON_Delete(response_json);
+    }
+
+    if (request->has_data)
+    {
+        cJSON_Delete(request_json);
+    }
+    return response;
+}
+
 void *socketThread(void *arg)
 {
     int socket = *((int *)arg);
+
     request *request = get_request(socket);
     printf("%s\n", request->method);
     printf("%s\n", request->path);
@@ -23,8 +70,14 @@ void *socketThread(void *arg)
     {
         printf("%s\n", request->data);
     }
+
+    char *response = handle_request(request);
+    send(socket, response, strlen(response), 0);
+
     close(socket);
     destroy_request(request);
+    free(response);
+
     pthread_exit(NULL);
 }
 

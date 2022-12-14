@@ -21,7 +21,7 @@ function App() {
     } else {
       res = await fetch("http://127.0.0.1:1100" + url, {
         method: "POST",
-        body: JSON.stringify(data),
+        body: JSON.stringify({ data: data }),
         headers: {
           Authorization: "12345"
         }
