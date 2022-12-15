@@ -1,5 +1,6 @@
 #include "requests.h"
 #include "cJSON.h"
+#include "controller.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/socket.h>
@@ -18,51 +19,6 @@ void int_handler(int sign)
 {
     shutdown(serverSocket, SHUT_RD);
     close(serverSocket);
-}
-
-bool is_operation(request *request, char *method, char *path)
-{
-    if (strcmp(request->method, method) == 0 && strcmp(request->path, path) == 0)
-    {
-        return true;
-    }
-    return false;
-}
-
-char *handle_request(request *request)
-{
-    cJSON *request_json = NULL;
-    if (request->has_data)
-    {
-        request_json = cJSON_Parse(request->data);
-    }
-
-    char *response = NULL;
-    cJSON *response_json = NULL;
-    if (strcmp(request->method, "OPTIONS") == 0)
-    {
-        response = get_resposne(HTTP_OK, NULL);
-    }
-    else if (is_operation(request, "POST", "/hello"))
-    {
-        response_json = cJSON_CreateObject();
-        cJSON_AddStringToObject(response_json, "response", "Hello, World!");
-        response = get_resposne(HTTP_OK, response_json);
-    }
-    else
-    {
-        response = get_resposne(HTTP_OK, NULL);
-    }
-    if (response_json != NULL)
-    {
-        cJSON_Delete(response_json);
-    }
-
-    if (request->has_data)
-    {
-        cJSON_Delete(request_json);
-    }
-    return response;
 }
 
 void *socketThread(void *arg)

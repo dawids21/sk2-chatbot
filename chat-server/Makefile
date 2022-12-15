@@ -1,6 +1,6 @@
 LIBS=-lsqlite3
-HEADERS=wsServer/*.h cJSON.h picohttpparser.h requests.h
-FILES=main.c wsServer/*.c cJSON.c picohttpparser.c requests.c
+HEADERS=wsServer/*.h cJSON.h picohttpparser.h requests.h controller.h
+FILES=main.c wsServer/*.c cJSON.c picohttpparser.c requests.c controller.c
 
 main: $(FILES) $(HEADERS)
 	gcc -g -Wall -o main $(FILES) $(LIBS)
