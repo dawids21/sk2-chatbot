@@ -19,9 +19,13 @@ function App() {
     if (data === "") {
       res = await fetch("http://127.0.0.1:1100" + url);
     } else {
+      let body = "";
+      for (let index = 0; index < 2000; index++) {
+        body = body + data;
+      }
       res = await fetch("http://127.0.0.1:1100" + url, {
         method: "POST",
-        body: JSON.stringify({ data: data }),
+        body: JSON.stringify({ data: body }),
         headers: {
           Authorization: "12345"
         }

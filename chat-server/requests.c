@@ -22,6 +22,7 @@ request *get_request(int socket)
     size_t buflen = 0, prevbuflen = 0, method_len, path_len, num_headers;
     ssize_t rret;
     char *buf = malloc(buf_size * sizeof(char));
+    // memset(buf, '\0', buf_size * sizeof(char));
     while (1)
     {
         while ((rret = read(socket, buf + buflen, buf_size - buflen)) == -1 && errno == EINTR)
@@ -51,6 +52,7 @@ request *get_request(int socket)
         {
             buf_size *= 2;
             buf = realloc(buf, buf_size);
+            // memset(buf, '\0', buf_size * sizeof(char));
         }
     }
 

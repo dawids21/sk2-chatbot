@@ -12,6 +12,7 @@
 #include <pthread.h>
 #include <errno.h>
 #include <signal.h>
+#include <string.h>
 
 static int serverSocket;
 
@@ -34,7 +35,7 @@ void *socketThread(void *arg)
     }
     if (request->has_data == true)
     {
-        printf("%s\n", request->data);
+        printf("%lu %s\n", strlen(request->data), request->data);
     }
 
     char *response = handle_request(request);
