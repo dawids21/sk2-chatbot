@@ -161,6 +161,10 @@ char *get_resposne(http_status status, cJSON *payload)
     {
         status_str = "200 OK";
     }
+    else if (status == HTTP_BAD_REQUEST)
+    {
+        status_str = "400 Bad Request";
+    }
     sprintf(response, "HTTP/1.1 %s\r\nAccess-Control-Allow-Origin: http://localhost:3000\r\nAccess-Control-Allow-Headers: *\r\nContent-Type: application/json\r\n\r\n%s", status_str, body);
     free(body);
     return response;

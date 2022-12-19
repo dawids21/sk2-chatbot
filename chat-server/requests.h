@@ -7,6 +7,7 @@
 typedef int http_status;
 
 #define HTTP_OK ((http_status)1)
+#define HTTP_BAD_REQUEST ((http_status)2)
 
 typedef struct
 {

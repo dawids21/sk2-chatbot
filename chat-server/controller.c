@@ -2,8 +2,9 @@
 #include "cJSON.h"
 #include "endpoints.h"
 #include <string.h>
+#include "requests.h"
 
-typedef cJSON *(*operation)(cJSON *request);
+typedef cJSON *(*operation)(cJSON *request, http_status *response_status);
 
 bool is_operation(request *request, char *method, char *path);
 operation get_operation(request *request);
@@ -17,8 +18,9 @@ char *handle_request(request *request)
     }
 
     operation operation = get_operation(request);
-    cJSON *response_json = operation(request_json);
-    char *response = get_resposne(HTTP_OK, response_json);
+    http_status status;
+    cJSON *response_json = operation(request_json, &status);
+    char *response = get_resposne(status, response_json);
 
     if (response_json != NULL)
     {
@@ -50,6 +52,10 @@ operation get_operation(request *request)
     else if (is_operation(request, "POST", "/hello"))
     {
         return &get_hello;
+    }
+    else if (is_operation(request, "POST", "/register"))
+    {
+        return &post_register;
     }
     return &get_null;
 }
