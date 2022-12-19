@@ -3,7 +3,7 @@ HEADERS=wsServer/*.h cJSON.h picohttpparser.h requests.h controller.h
 FILES=main.c wsServer/*.c cJSON.c picohttpparser.c requests.c controller.c
 
 main: $(FILES) $(HEADERS)
-	gcc -g -Wall -o main $(FILES) $(LIBS)
+	gcc -g -fsanitize=address -Wall -o main $(FILES) $(LIBS)
 
 .PHONY: clean
 

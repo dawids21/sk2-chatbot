@@ -15,44 +15,79 @@
 request *get_request(int socket)
 {
     request *result = malloc(sizeof(request));
-
-    const char *path, *method;
-    int pret, minor_version, buf_size = 1024;
-    struct phr_header headers[100];
-    size_t buflen = 0, prevbuflen = 0, method_len, path_len, num_headers;
-    ssize_t rret;
+    int buf_size = 1024;
     char *buf = malloc(buf_size * sizeof(char));
-    // memset(buf, '\0', buf_size * sizeof(char));
-    while (1)
+    memset(buf, '\0', buf_size * sizeof(char));
+    struct phr_header headers[100];
+    size_t num_headers = sizeof(headers) / sizeof(headers[0]);
+    size_t buf_length = 0;
+    ssize_t bytes;
+    int parsed;
+    while ((bytes = read(socket, buf + buf_length, buf_size - buf_length)) == -1 && errno == EINTR)
+        ;
+    if (bytes <= 0)
     {
-        while ((rret = read(socket, buf + buflen, buf_size - buflen)) == -1 && errno == EINTR)
+        printf("Problem with connection");
+        free(buf);
+        return NULL;
+    }
+    buf_length += bytes;
+    size_t method_len, path_len;
+    const char *path, *method;
+    int minor_version;
+    parsed = phr_parse_request(buf, buf_length, &method, &method_len, &path, &path_len,
+                               &minor_version, headers, &num_headers, 0);
+    if (parsed == -1)
+    {
+        printf("Problem with parsing");
+        free(buf);
+        return NULL;
+    }
+    int content_length = 0;
+    for (int i = 0; i < num_headers; i++)
+    {
+        if (strncmp("Content-Length", headers[i].name, headers[i].name_len) == 0)
+        {
+            content_length = atoi(headers[i].value);
+            char *end_request_ptr = strstr(buf, "\r\n\r\n");
+            if (end_request_ptr != NULL && buf_size - ((end_request_ptr + 4 - buf) / sizeof(char)) >= content_length + 1)
+            {
+                break;
+            }
+            buf_size += content_length + 1;
+            buf = realloc(buf, buf_size);
+            memset(buf + buf_length, '\0', (content_length + 1) * sizeof(char));
+            break;
+        }
+    }
+    bool should_read = true;
+    char *end_request_ptr = strstr(buf, "\r\n\r\n");
+    if (end_request_ptr != NULL && strlen(end_request_ptr + 4) == content_length)
+    {
+        should_read = false;
+    }
+    while (should_read)
+    {
+        while ((bytes = read(socket, buf + buf_length, buf_size - buf_length)) == -1 && errno == EINTR)
             ;
-        if (rret <= 0)
+        if (bytes <= 0)
         {
             printf("Problem with connection");
             return NULL;
         }
-        prevbuflen = buflen;
-        buflen += rret;
-        num_headers = sizeof(headers) / sizeof(headers[0]);
-        pret = phr_parse_request(buf, buflen, &method, &method_len, &path, &path_len,
-                                 &minor_version, headers, &num_headers, prevbuflen);
-        if (pret > 0)
-        {
-            break;
-        }
-        else if (pret == -1)
+        buf_length += bytes;
+        parsed = phr_parse_request(buf, buf_length, &method, &method_len, &path, &path_len,
+                                   &minor_version, headers, &num_headers, 0);
+        if (parsed == -1)
         {
             printf("Problem with parsing");
             free(buf);
             return NULL;
         }
-        assert(pret == -2);
-        if (buflen == sizeof(buf))
+        end_request_ptr = strstr(buf, "\r\n\r\n");
+        if (end_request_ptr != NULL && strlen(end_request_ptr + 4) == content_length)
         {
-            buf_size *= 2;
-            buf = realloc(buf, buf_size);
-            // memset(buf, '\0', buf_size * sizeof(char));
+            should_read = false;
         }
     }
 
@@ -69,8 +104,9 @@ request *get_request(int socket)
         {
             result->auth = malloc(headers[i].value_len + 1);
             strncpy(result->auth, headers[i].value, headers[i].value_len);
-            result->method[headers[i].value_len] = '\0';
+            result->auth[headers[i].value_len] = '\0';
             result->has_auth = true;
+            break;
         }
     }
     result->has_data = false;
