@@ -1,5 +1,6 @@
 #include "controller.h"
 #include "cJSON.h"
+#include "endpoints.h"
 #include <string.h>
 
 typedef cJSON *(*operation)(cJSON *request);
@@ -40,9 +41,6 @@ bool is_operation(request *request, char *method, char *path)
     return false;
 }
 
-cJSON *get_null(cJSON *request);
-cJSON *get_hello(cJSON *request);
-
 operation get_operation(request *request)
 {
     if (strcmp(request->method, "OPTIONS") == 0)
@@ -54,16 +52,4 @@ operation get_operation(request *request)
         return &get_hello;
     }
     return &get_null;
-}
-
-cJSON *get_null(cJSON *request)
-{
-    return NULL;
-}
-
-cJSON *get_hello(cJSON *request)
-{
-    cJSON *response_json = cJSON_CreateObject();
-    cJSON_AddStringToObject(response_json, "response", "Hello, World!");
-    return response_json;
 }

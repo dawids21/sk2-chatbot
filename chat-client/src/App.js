@@ -14,7 +14,6 @@ function App() {
   }
 
   const sendRequest = async () => {
-    console.log(url);
     let res;
     if (data === "") {
       res = await fetch("http://127.0.0.1:1100" + url);
