@@ -169,6 +169,18 @@ char *get_resposne(http_status status, cJSON *payload)
     {
         status_str = "405 Method Not Allowed";
     }
+    else if (status == HTTP_UNAUTHORIZED)
+    {
+        status_str = "401 Unauthorized";
+    }
+    else if (status == HTTP_NOT_FOUND)
+    {
+        status_str = "404 Not Found";
+    }
+    else
+    {
+        status_str = "500 Internal Server Error";
+    }
     sprintf(response, "HTTP/1.1 %s\r\nAccess-Control-Allow-Origin: http://localhost:3000\r\nAccess-Control-Allow-Headers: *\r\nContent-Type: application/json\r\n\r\n%s", status_str, body);
     free(body);
     return response;
