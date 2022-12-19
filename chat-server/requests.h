@@ -3,11 +3,7 @@
 
 #include <stdbool.h>
 #include "cJSON.h"
-
-typedef int http_status;
-
-#define HTTP_OK ((http_status)1)
-#define HTTP_BAD_REQUEST ((http_status)2)
+#include "http_status.h"
 
 typedef struct
 {

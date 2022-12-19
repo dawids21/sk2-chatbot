@@ -165,6 +165,10 @@ char *get_resposne(http_status status, cJSON *payload)
     {
         status_str = "400 Bad Request";
     }
+    else if (status == HTTP_METHOD_NOT_ALLOWED)
+    {
+        status_str = "405 Method Not Allowed";
+    }
     sprintf(response, "HTTP/1.1 %s\r\nAccess-Control-Allow-Origin: http://localhost:3000\r\nAccess-Control-Allow-Headers: *\r\nContent-Type: application/json\r\n\r\n%s", status_str, body);
     free(body);
     return response;

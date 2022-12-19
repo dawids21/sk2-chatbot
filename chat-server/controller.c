@@ -1,8 +1,8 @@
 #include "controller.h"
 #include "cJSON.h"
-#include "endpoints.h"
 #include <string.h>
-#include "requests.h"
+#include "user_service.h"
+#include "http_status.h"
 
 typedef cJSON *(*operation)(cJSON *request, http_status *response_status);
 
@@ -43,19 +43,19 @@ bool is_operation(request *request, char *method, char *path)
     return false;
 }
 
+cJSON *get_method_not_allowed(cJSON *request, http_status *response_status);
+
 operation get_operation(request *request)
 {
-    if (strcmp(request->method, "OPTIONS") == 0)
+    if (is_operation(request, "POST", "/register"))
     {
-        return &get_null;
+        return &register_user;
     }
-    else if (is_operation(request, "POST", "/hello"))
-    {
-        return &get_hello;
-    }
-    else if (is_operation(request, "POST", "/register"))
-    {
-        return &post_register;
-    }
-    return &get_null;
+    return &get_method_not_allowed;
+}
+
+cJSON *get_method_not_allowed(cJSON *request, http_status *response_status)
+{
+    *response_status = HTTP_METHOD_NOT_ALLOWED;
+    return NULL;
 }

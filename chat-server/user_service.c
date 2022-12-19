@@ -1,7 +1,11 @@
 #include "user_service.h"
 #include <stdio.h>
 
-void register_user(char *username, char *password)
+cJSON *register_user(cJSON *request, http_status *response_status)
 {
-    printf("Username: %s, password: %s\n", username, password);
+    cJSON *username = cJSON_GetObjectItemCaseSensitive(request, "username");
+    cJSON *password = cJSON_GetObjectItemCaseSensitive(request, "password");
+    printf("Username: %s, password: %s\n", username->valuestring, password->valuestring);
+    *response_status = HTTP_OK;
+    return NULL;
 }
