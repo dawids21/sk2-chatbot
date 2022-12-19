@@ -141,7 +141,7 @@ void destroy_request(request *request)
     free(request);
 }
 
-char *get_resposne(http_status status, cJSON *payload)
+char *get_response(http_status status, cJSON *payload)
 {
     char *response;
     char *body = malloc(sizeof(char));

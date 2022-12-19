@@ -4,7 +4,7 @@
 #include "user_service.h"
 #include "http_status.h"
 
-typedef cJSON *(*operation)(cJSON *request, http_status *response_status);
+typedef cJSON *(*operation)(cJSON *request, int user_id, http_status *response_status);
 
 bool is_operation(request *request, char *method, char *path);
 operation get_operation(request *request);
@@ -19,8 +19,14 @@ char *handle_request(request *request)
 
     operation operation = get_operation(request);
     http_status status;
-    cJSON *response_json = operation(request_json, &status);
-    char *response = get_resposne(status, response_json);
+    char *token = NULL;
+    if (request->has_auth)
+    {
+        token = request->auth;
+    }
+    int user_id = get_user_id(token);
+    cJSON *response_json = operation(request_json, user_id, &status);
+    char *response = get_response(status, response_json);
 
     if (response_json != NULL)
     {
@@ -43,7 +49,7 @@ bool is_operation(request *request, char *method, char *path)
     return false;
 }
 
-cJSON *get_method_not_allowed(cJSON *request, http_status *response_status);
+cJSON *get_method_not_allowed(cJSON *request, int user_id, http_status *response_status);
 
 operation get_operation(request *request)
 {
@@ -51,10 +57,18 @@ operation get_operation(request *request)
     {
         return &register_user;
     }
+    else if (is_operation(request, "POST", "/login"))
+    {
+        return &login;
+    }
+    else if (is_operation(request, "GET", "/users"))
+    {
+        return &get_users;
+    }
     return &get_method_not_allowed;
 }
 
-cJSON *get_method_not_allowed(cJSON *request, http_status *response_status)
+cJSON *get_method_not_allowed(cJSON *request, int user_id, http_status *response_status)
 {
     *response_status = HTTP_METHOD_NOT_ALLOWED;
     return NULL;

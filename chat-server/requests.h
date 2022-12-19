@@ -17,6 +17,6 @@ typedef struct
 
 request *get_request(int socket);
 void destroy_request(request *request);
-char *get_resposne(http_status status, cJSON *payload);
+char *get_response(http_status status, cJSON *payload);
 
 #endif

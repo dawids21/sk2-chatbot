@@ -3,7 +3,11 @@
 
 #include "cJSON.h"
 #include "http_status.h"
+#include <stdbool.h>
 
-cJSON *register_user(cJSON *request, http_status *response_status);
+int get_user_id(char *token);
+cJSON *register_user(cJSON *request, int user_id, http_status *response_status);
+cJSON *login(cJSON *request, int user_id, http_status *response_status);
+cJSON *get_users(cJSON *request, int user_id, http_status *response_status);
 
 #endif
