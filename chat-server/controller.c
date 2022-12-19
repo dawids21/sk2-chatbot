@@ -65,6 +65,26 @@ operation get_operation(request *request)
     {
         return &get_users;
     }
+    else if (is_operation(request, "GET", "/users/username"))
+    {
+        return &get_users_by_username;
+    }
+    else if (is_operation(request, "POST", "/friends"))
+    {
+        return &add_friend;
+    }
+    else if (is_operation(request, "DELETE", "/friends"))
+    {
+        return &delete_friend;
+    }
+    else if (is_operation(request, "GET", "/friends"))
+    {
+        return &get_friends;
+    }
+    else if (is_operation(request, "GET", "/messages"))
+    {
+        return &get_messages;
+    }
     return &get_method_not_allowed;
 }
 
