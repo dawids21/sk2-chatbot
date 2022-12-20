@@ -3,8 +3,7 @@ import SnackbarContextProvider from "./context/SnackbarContextProvider";
 import AppRoutes from "./components/routes/AppRoutes"
 import AppBar from "./components/ui/appBar/AppBar";
 import { ThemeProvider } from "@mui/material";
-import theme from "./config/theme"
-import SnackbarContext from "./context/snackbar-context";
+import theme from "./config/theme";
 
 const App = () => {
   return (

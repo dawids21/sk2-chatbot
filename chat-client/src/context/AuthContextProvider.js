@@ -15,7 +15,7 @@ const AuthContextProvider = (props) => {
       method: "POST",
       body: JSON.stringify({ username, password }),
     });
-    if (token.status != 200) {
+    if (token.status !== 200) {
       alert("Wrong credentials", "error");
       return;
     }

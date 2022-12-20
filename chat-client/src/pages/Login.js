@@ -1,16 +1,19 @@
-import { Button } from "@mui/material";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import LoginForm from "../components/login/LoginForm";
 import AuthContext from "../context/auth-context";
 
 const Login = () => {
-  const authContext = useContext(AuthContext);
-  const handleLogin = () => {
-    authContext.onLogin("dawids21", "12345");
-  };
+  const { isLoggedIn } = useContext(AuthContext);
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (isLoggedIn) {
+      navigate("/");
+    }
+  }, [isLoggedIn, navigate]);
   return (
     <>
-      <h1>Login</h1>
-      <Button onClick={handleLogin}>Login</Button>
+      <LoginForm />
     </>
   );
 };
