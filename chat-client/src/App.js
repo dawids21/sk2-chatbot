@@ -4,11 +4,12 @@ import AppRoutes from "./components/routes/AppRoutes"
 import AppBar from "./components/ui/appBar/AppBar";
 import { ThemeProvider } from "@mui/material";
 import theme from "./config/theme"
+import SnackbarContext from "./context/snackbar-context";
 
 const App = () => {
   return (
-    <AuthContextProvider>
-      <SnackbarContextProvider>
+    <SnackbarContextProvider>
+      <AuthContextProvider>
         <ThemeProvider theme={theme}>
           <header>
             <AppBar />
@@ -17,9 +18,9 @@ const App = () => {
             <AppRoutes />
           </main>
         </ThemeProvider>
-      </SnackbarContextProvider>
-    </AuthContextProvider>
+      </AuthContextProvider>
+    </SnackbarContextProvider>
   );
-}
+};
 
 export default App;

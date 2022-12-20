@@ -1,10 +1,10 @@
 import React from "react";
 
 const AuthContext = React.createContext({
-  token: '',
+  token: "",
   isLoggedIn: false,
-  onLogin: (username, password) => { },
-  onLogout: () => { }
+  onLogin: async (username, password) => {},
+  onLogout: async () => {},
 });
 
 export default AuthContext;
