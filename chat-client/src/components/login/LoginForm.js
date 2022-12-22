@@ -1,4 +1,4 @@
-import { Button, TextField } from "@mui/material";
+import { Button, Link, TextField, Typography } from "@mui/material";
 import { useContext } from "react";
 import AuthContext from "../../context/auth-context";
 import useInput from "../../hooks/use-input";
@@ -48,7 +48,10 @@ const LoginForm = () => {
         onBlur={passwordInput.inputBlurHandler}
         error={passwordInput.hasError}
       />
-      <Button type="submit" variant="contained" fullWidth>
+      <Typography variant="body2">
+        Don't have an account? <Link href="/register">Register now.</Link>
+      </Typography>
+      <Button type="submit" variant="contained" fullWidth sx={{ mt: 1 }}>
         Login
       </Button>
     </form>
