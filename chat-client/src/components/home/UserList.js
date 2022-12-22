@@ -26,7 +26,7 @@ const UserList = ({ users, friends, addFriendHandler, removeFriendHandler }) => 
       {users.map((user) => (
         <Paper
           sx={{ mt: 1, p: 2, display: "flex", justifyContent: "space-between" }}
-          elevation={4} key={user.id} onClick={() => navigate("/chat/2")}
+          elevation={4} key={user.id} onClick={() => navigate(`/chat/${user.id}`)}
         >
           <Typography variant="h5">
             {user.username}

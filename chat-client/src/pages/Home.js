@@ -32,7 +32,7 @@ const Home = () => {
     if (isLoggedIn && token !== "") {
       getFriends();
     }
-  }, [alert, token]);
+  }, [alert, isLoggedIn, token]);
 
   useEffect(() => {
     const getUsers = async (name) => {
