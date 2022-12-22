@@ -31,6 +31,20 @@ const AuthContextProvider = (props) => {
     navigate("/login");
   };
 
+  const getInfo = async () => {
+    const response = await fetch(`${backend.url}/info/auth`, {
+      method: "GET",
+      headers: {
+        Authorization: token
+      }
+    })
+    if (response.status !== 200) {
+      return "User";
+    }
+    const data = await response.json();
+    return data;
+  }
+
   return (
     <AuthContext.Provider
       value={{
@@ -38,6 +52,7 @@ const AuthContextProvider = (props) => {
         token: token,
         onLogin: loginHandler,
         onLogout: logoutHandler,
+        getInfo: getInfo
       }}
     >
       {props.children}

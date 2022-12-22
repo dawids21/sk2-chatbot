@@ -4,7 +4,8 @@ const AuthContext = React.createContext({
   token: "",
   isLoggedIn: false,
   onLogin: async (username, password) => {},
-  onLogout: async () => {},
+  onLogout: () => { },
+  getInfo: async () => { }
 });
 
 export default AuthContext;

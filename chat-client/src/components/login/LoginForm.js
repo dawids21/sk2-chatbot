@@ -13,12 +13,12 @@ const LoginForm = () => {
     passwordInput.reset();
   };
   const isInputValid = usernameInput.isValid && passwordInput.isValid;
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     if (!isInputValid) {
       return;
     }
-    authContext.onLogin(usernameInput.value, passwordInput.value);
+    await authContext.onLogin(usernameInput.value, passwordInput.value);
     resetInputs();
   };
 
