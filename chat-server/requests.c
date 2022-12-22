@@ -150,11 +150,11 @@ char *get_response(http_status status, cJSON *payload)
     {
         free(body);
         body = cJSON_Print(payload);
-        response = malloc(sizeof(char) * (160 + strlen(body)));
+        response = malloc(sizeof(char) * (200 + strlen(body)));
     }
     else
     {
-        response = malloc(sizeof(char) * 160);
+        response = malloc(sizeof(char) * 200);
     }
     char *status_str;
     if (status == HTTP_OK)
@@ -181,7 +181,7 @@ char *get_response(http_status status, cJSON *payload)
     {
         status_str = "500 Internal Server Error";
     }
-    sprintf(response, "HTTP/1.1 %s\r\nAccess-Control-Allow-Origin: http://localhost:3000\r\nAccess-Control-Allow-Headers: *\r\nContent-Type: application/json\r\n\r\n%s", status_str, body);
+    sprintf(response, "HTTP/1.1 %s\r\nAccess-Control-Allow-Origin: http://localhost:3000\r\nAccess-Control-Allow-Headers: *\r\nAccess-Control-Allow-Methods: *\r\nContent-Type: application/json\r\n\r\n%s", status_str, body);
     free(body);
     return response;
 }
