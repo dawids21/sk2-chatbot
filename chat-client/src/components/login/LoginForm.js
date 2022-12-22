@@ -48,7 +48,7 @@ const LoginForm = () => {
         onBlur={passwordInput.inputBlurHandler}
         error={passwordInput.hasError}
       />
-      <Button type="submit" variant="contained">
+      <Button type="submit" variant="contained" fullWidth>
         Login
       </Button>
     </form>
