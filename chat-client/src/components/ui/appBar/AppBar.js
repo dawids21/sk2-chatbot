@@ -39,6 +39,10 @@ const AppBar = () => {
   } else {
     buttons = [
       {
+        name: "Chat",
+        action: () => navigate("/chat")
+      },
+      {
         name: "Logout",
         action: () => {
           navigate("/")

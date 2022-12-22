@@ -1,6 +1,8 @@
 import { Button, Paper, Typography } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 const UserList = ({ users, friends, addFriendHandler, removeFriendHandler }) => {
+  const navigate = useNavigate();
   if (users.length === 0) {
     return;
   }
@@ -24,7 +26,7 @@ const UserList = ({ users, friends, addFriendHandler, removeFriendHandler }) => 
       {users.map((user) => (
         <Paper
           sx={{ mt: 1, p: 2, display: "flex", justifyContent: "space-between" }}
-          elevation={4} key={user.id}
+          elevation={4} key={user.id} onClick={() => navigate("/chat/2")}
         >
           <Typography variant="h5">
             {user.username}
