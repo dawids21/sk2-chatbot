@@ -49,11 +49,16 @@ bool is_operation(request *request, char *method, char *path)
     return false;
 }
 
+cJSON *get_options(cJSON *request, int user_id, http_status *response_status);
 cJSON *get_method_not_allowed(cJSON *request, int user_id, http_status *response_status);
 
 operation get_operation(request *request)
 {
-    if (is_operation(request, "POST", "/register"))
+    if (strcmp(request->method, "OPTIONS") == 0)
+    {
+        return &get_options;
+    }
+    else if (is_operation(request, "POST", "/register"))
     {
         return &register_user;
     }
@@ -65,7 +70,7 @@ operation get_operation(request *request)
     {
         return &get_users;
     }
-    else if (is_operation(request, "GET", "/users/username"))
+    else if (is_operation(request, "POST", "/users/username"))
     {
         return &get_users_by_username;
     }
@@ -81,11 +86,17 @@ operation get_operation(request *request)
     {
         return &get_friends;
     }
-    else if (is_operation(request, "GET", "/messages"))
+    else if (is_operation(request, "POST", "/messages"))
     {
         return &get_messages;
     }
     return &get_method_not_allowed;
+}
+
+cJSON *get_options(cJSON *request, int user_id, http_status *response_status)
+{
+    *response_status = HTTP_OK;
+    return NULL;
 }
 
 cJSON *get_method_not_allowed(cJSON *request, int user_id, http_status *response_status)
