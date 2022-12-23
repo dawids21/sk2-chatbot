@@ -39,10 +39,19 @@ const Chat = () => {
       <Grid2 xs={2}>
         {isLoading ? <CenterCircularProgress /> : <UserList users={friends} />}
       </Grid2>
-      <Grid2 container flexDirection="column" xs={10} sx={{ maxHeight: "90vh" }} justifyContent="space-between">
+      <Grid2
+        container
+        flexDirection="column"
+        xs={10}
+        sx={{ maxHeight: "90vh" }}
+        justifyContent="space-between"
+      >
         {userId !== undefined ? (
           <>
-            <Grid2 xs={10} sx={{ overflowY: "scroll", height: "80%", width: "100%" }}>
+            <Grid2
+              xs={10}
+              sx={{ overflowY: "scroll", height: "80%", width: "100%" }}
+            >
               <ChatLog userId={userId} />
             </Grid2>
             <Grid2 xs={2} sx={{ width: "100%" }}>
