@@ -1,8 +1,9 @@
 import { Typography } from "@mui/material";
+import { forwardRef } from "react";
 
-const Message = ({ name, timestamp, message }) => {
+const Message = forwardRef(({ name, timestamp, message }, ref) => {
   return (
-    <Typography variant="body1">
+    <Typography variant="h2" ref={ref !== undefined ? ref : null}>
       {`${name} (${timestamp.toLocaleDateString("pl-PL", {
         year: "numeric",
         month: "numeric",
@@ -12,6 +13,6 @@ const Message = ({ name, timestamp, message }) => {
       })}): ${message}`}
     </Typography>
   );
-}
+});
 
 export default Message;

@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import backend from "../../config/backend";
 import AuthContext from "../../context/auth-context";
 import useSnackbar from "../../hooks/use-snackbar";
@@ -14,6 +14,7 @@ const ChatLog = ({ userId }) => {
   const [areMessagesLoading, setAreMessagesLoading] = useState(true);
   const { token, getInfo } = useContext(AuthContext);
   const alert = useSnackbar();
+  const messageRef = useRef(null);
   useEffect(() => {
     const getUser = async () => {
       setIsUsernameLoading(true);
@@ -76,19 +77,37 @@ const ChatLog = ({ userId }) => {
     let result = [];
     for (let index = 0; index < messages.length; index++) {
       const message = messages[index];
-      result.push(
-        <Message
-          key={message.id}
-          name={message.user_id === parseInt(userId) ? username : myUsername}
-          timestamp={new Date(message.timestamp)}
-          message={message.message}
-        />
-      );
+      let messageElement;
+      if (index === messages.length - 1) {
+        messageElement = (
+          <Message
+            key={message.id}
+            name={message.user_id === parseInt(userId) ? username : myUsername}
+            timestamp={new Date(message.timestamp)}
+            message={message.message}
+            ref={messageRef}
+          />
+        );
+      } else {
+        messageElement = (
+          <Message
+            key={message.id}
+            name={message.user_id === parseInt(userId) ? username : myUsername}
+            timestamp={new Date(message.timestamp)}
+            message={message.message}
+          />
+        );
+      }
+      result.push(messageElement);
     }
     return result;
   };
 
+  useEffect(() => {
+    messageRef.current?.scrollIntoView();
+  }, [isLoading]);
+
   return <>{isLoading ? <CenterCircularProgress /> : <>{getMessages()}</>}</>;
-}
+};
 
 export default ChatLog;
