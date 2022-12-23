@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import backend from "../config/backend";
 import useSnackbar from "../hooks/use-snackbar";
@@ -10,6 +10,14 @@ const AuthContextProvider = (props) => {
   const alert = useSnackbar();
   const navigate = useNavigate();
 
+  useEffect(() => {
+    if (localStorage.getItem("auth-token")) {
+      const token = localStorage.getItem("auth-token");
+      setToken(token);
+      setIsLoggedIn(true);
+    }
+  }, []);
+
   const loginHandler = async (username, password) => {
     const token = await fetch(`${backend.url}/login`, {
       method: "POST",
@@ -19,13 +27,15 @@ const AuthContextProvider = (props) => {
       alert("Wrong credentials", "error");
       return;
     }
-    setIsLoggedIn(true);
     const data = await token.json();
     setToken(data.token);
+    setIsLoggedIn(true);
+    localStorage.setItem("auth-token", data.token);
     navigate("/");
   };
 
   const logoutHandler = () => {
+    localStorage.removeItem("auth-token");
     setIsLoggedIn(false);
     setToken("");
     navigate("/login");
@@ -35,15 +45,15 @@ const AuthContextProvider = (props) => {
     const response = await fetch(`${backend.url}/info/auth`, {
       method: "GET",
       headers: {
-        Authorization: token
-      }
-    })
+        Authorization: token,
+      },
+    });
     if (response.status !== 200) {
       return "User";
     }
     const data = await response.json();
     return data;
-  }
+  };
 
   return (
     <AuthContext.Provider
@@ -52,7 +62,7 @@ const AuthContextProvider = (props) => {
         token: token,
         onLogin: loginHandler,
         onLogout: logoutHandler,
-        getInfo: getInfo
+        getInfo: getInfo,
       }}
     >
       {props.children}
