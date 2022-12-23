@@ -21,9 +21,9 @@ const ChatLog = ({ userId }) => {
         method: "POST",
         body: JSON.stringify({ id: userId }),
         headers: {
-          Authorization: token
-        }
-      })
+          Authorization: token,
+        },
+      });
       if (response.status !== 200) {
         setUsername("User");
         setIsUsernameLoading(false);
@@ -32,7 +32,7 @@ const ChatLog = ({ userId }) => {
       const data = await response.json();
       setUsername(data.username);
       setIsUsernameLoading(false);
-    }
+    };
     getUser();
   }, [userId, token]);
 
@@ -42,9 +42,9 @@ const ChatLog = ({ userId }) => {
       const info = await getInfo();
       setMyUsername(info.username);
       setIsMyUsernameLoading(false);
-    }
+    };
     setInfo();
-  }, [getInfo])
+  }, [getInfo]);
 
   useEffect(() => {
     const getMessages = async () => {
@@ -53,9 +53,9 @@ const ChatLog = ({ userId }) => {
         method: "POST",
         body: JSON.stringify({ friend_id: userId }),
         headers: {
-          Authorization: token
-        }
-      })
+          Authorization: token,
+        },
+      });
       if (response.status !== 200) {
         alert("Can't get messages", "error");
         setMessages([]);
@@ -65,30 +65,30 @@ const ChatLog = ({ userId }) => {
       const data = await response.json();
       setMessages(data);
       setAreMessagesLoading(false);
-    }
+    };
     getMessages();
   }, [userId, token, alert]);
 
-  const isLoading = isUsernameLoading || isMyUsernameLoading || areMessagesLoading;
+  const isLoading =
+    isUsernameLoading || isMyUsernameLoading || areMessagesLoading;
 
-  return (
-    <>
-      {
-        isLoading ? <CenterCircularProgress /> : (
-          <>
-            {messages.map((message) => (
-              <Message
-                key={message.timestamp}
-                name={message.user_id === parseInt(userId) ? username : myUsername}
-                timestamp={new Date(message.timestamp)}
-                message={message.message}
-              />
-            ))}
-          </>
-        )
-      }
-    </>
-  );
+  const getMessages = () => {
+    let result = [];
+    for (let index = 0; index < messages.length; index++) {
+      const message = messages[index];
+      result.push(
+        <Message
+          key={message.id}
+          name={message.user_id === parseInt(userId) ? username : myUsername}
+          timestamp={new Date(message.timestamp)}
+          message={message.message}
+        />
+      );
+    }
+    return result;
+  };
+
+  return <>{isLoading ? <CenterCircularProgress /> : <>{getMessages()}</>}</>;
 }
 
 export default ChatLog;
