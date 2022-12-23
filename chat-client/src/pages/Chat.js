@@ -1,4 +1,4 @@
-import { Box, TextField } from "@mui/material";
+import { Box, Button, TextField } from "@mui/material";
 import Grid2 from "@mui/material/Unstable_Grid2";
 import { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
@@ -45,11 +45,12 @@ const Chat = () => {
             sx={{
               overflow: "hidden",
               maxHeight: "calc(100vh - 96px)",
+              height: "calc(100vh - 96px)",
               display: "flex",
               flexDirection: "column",
             }}
           >
-            <Box sx={{ overflowY: "scroll" }}>
+            <Box sx={{ overflowY: "auto", flexGrow: 1 }}>
               <ChatLog userId={userId} />
             </Box>
             <TextField
