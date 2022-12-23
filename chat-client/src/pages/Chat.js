@@ -44,7 +44,7 @@ const Chat = () => {
           <Box
             sx={{
               overflow: "hidden",
-              maxHeight: "89vh",
+              maxHeight: "calc(100vh - 96px)",
               display: "flex",
               flexDirection: "column",
             }}
@@ -52,15 +52,13 @@ const Chat = () => {
             <Box sx={{ overflowY: "scroll" }}>
               <ChatLog userId={userId} />
             </Box>
-            <Box>
-              <TextField
-                margin="normal"
-                id="message"
-                type="text"
-                fullWidth
-                variant="outlined"
-              />
-            </Box>
+            <TextField
+              margin="normal"
+              id="message"
+              type="text"
+              fullWidth
+              variant="outlined"
+            />
           </Box>
         ) : null}
       </Grid2>
