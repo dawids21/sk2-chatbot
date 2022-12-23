@@ -21,16 +21,29 @@ const UserList = ({ users, friends, addFriendHandler, removeFriendHandler }) => 
       </Button>
     );
   };
+  
+  const handleClick = (userId) => {
+    if (!friendIds.includes(userId)) {
+      return;
+    }
+    navigate(`/chat/${userId}`);
+  };
   return (
     <>
       {users.map((user) => (
         <Paper
-          sx={{ mt: 1, p: 2, display: "flex", justifyContent: "space-between", cursor: "pointer" }}
-          elevation={4} key={user.id} onClick={() => navigate(`/chat/${user.id}`)}
+          sx={{
+            mt: 1,
+            p: 2,
+            display: "flex",
+            justifyContent: "space-between",
+            cursor: "pointer",
+          }}
+          elevation={4}
+          key={user.id}
+          onClick={() => handleClick(user.id)}
         >
-          <Typography variant="h5">
-            {user.username}
-          </Typography>
+          <Typography variant="h5">{user.username}</Typography>
           {friendIds.includes(user.id) ? removeButton(user) : addButton(user)}
         </Paper>
       ))}
