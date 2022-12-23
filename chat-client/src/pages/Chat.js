@@ -1,4 +1,4 @@
-import { TextField } from "@mui/material";
+import { Box, TextField } from "@mui/material";
 import Grid2 from "@mui/material/Unstable_Grid2";
 import { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
@@ -35,26 +35,24 @@ const Chat = () => {
     getFriends();
   }, [alert, isLoggedIn, token]);
   return (
-    <Grid2 container spacing={2} sx={{ overflow: "hidden" }}>
+    <Grid2 container spacing={2} sx={{ m: 2, mb: 0 }}>
       <Grid2 xs={2}>
         {isLoading ? <CenterCircularProgress /> : <UserList users={friends} />}
       </Grid2>
-      <Grid2
-        container
-        flexDirection="column"
-        xs={10}
-        sx={{ maxHeight: "90vh" }}
-        justifyContent="space-between"
-      >
+      <Grid2 xs={10}>
         {userId !== undefined ? (
-          <>
-            <Grid2
-              xs={10}
-              sx={{ overflowY: "scroll", height: "80%", width: "100%" }}
-            >
+          <Box
+            sx={{
+              overflow: "hidden",
+              maxHeight: "89vh",
+              display: "flex",
+              flexDirection: "column",
+            }}
+          >
+            <Box sx={{ overflowY: "scroll" }}>
               <ChatLog userId={userId} />
-            </Grid2>
-            <Grid2 xs={2} sx={{ width: "100%" }}>
+            </Box>
+            <Box>
               <TextField
                 margin="normal"
                 id="message"
@@ -62,8 +60,8 @@ const Chat = () => {
                 fullWidth
                 variant="outlined"
               />
-            </Grid2>
-          </>
+            </Box>
+          </Box>
         ) : null}
       </Grid2>
     </Grid2>
