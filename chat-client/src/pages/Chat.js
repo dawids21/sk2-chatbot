@@ -1,20 +1,25 @@
 import { Box, TextField } from "@mui/material";
 import Grid2 from "@mui/material/Unstable_Grid2";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import ChatLog from "../components/chat/ChatLog";
 import UserList from "../components/chat/UserList";
 import CenterCircularProgress from "../components/ui/CenterCircularProgress";
 import backend from "../config/backend";
 import AuthContext from "../context/auth-context";
+import MessagesContext from "../context/messages-context";
 import useSnackbar from "../hooks/use-snackbar";
 
 const Chat = () => {
   const { userId: userIdStr } = useParams();
-  const userId = userIdStr !== undefined ? parseInt(userIdStr) : null;
+  const userId = useMemo(
+    () => (userIdStr !== undefined ? parseInt(userIdStr) : null),
+    [userIdStr]
+  );
   const [friends, setFriends] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const { isLoggedIn, token } = useContext(AuthContext);
+  const { unreadMessages, readMessage } = useContext(MessagesContext);
   const alert = useSnackbar();
   useEffect(() => {
     const getFriends = async () => {
@@ -35,10 +40,18 @@ const Chat = () => {
     };
     getFriends();
   }, [alert, isLoggedIn, token]);
+
+  useEffect(() => {
+    readMessage(userId);
+  }, [userId, readMessage]);
   return (
     <Grid2 container spacing={2} sx={{ m: 2, mb: 0 }}>
       <Grid2 xs={2}>
-        {isLoading ? <CenterCircularProgress /> : <UserList users={friends} />}
+        {isLoading ? (
+          <CenterCircularProgress />
+        ) : (
+          <UserList users={friends} unreadMessages={unreadMessages} />
+        )}
       </Grid2>
       <Grid2 xs={10}>
         {userId ? (

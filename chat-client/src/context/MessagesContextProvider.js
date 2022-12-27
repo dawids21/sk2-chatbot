@@ -57,15 +57,24 @@ const MessagesContextProvider = (props) => {
 
       socket.onmessage = (event) => {
         const data = JSON.parse(event.data);
-        const message = {
-          id: parseInt(data.id),
-          user_id: parseInt(data.user_id),
-          message: data.message,
-          timestamp: data.timestamp,
-        };
-        if (parseInt(data.from) === userId) {
-          console.log(message);
-          setMessages((prevMessages) => [...prevMessages, message]);
+        const from = parseInt(data.from);
+        if (from === userId) {
+          setMessages((prevMessages) => [
+            ...prevMessages,
+            {
+              id: parseInt(data.id),
+              user_id: parseInt(data.user_id),
+              message: data.message,
+              timestamp: data.timestamp,
+            },
+          ]);
+        } else {
+          setUnreadMessages((prevUnreadMessages) => {
+            if (!prevUnreadMessages.includes(from)) {
+              return [...prevUnreadMessages, from];
+            }
+            return prevUnreadMessages;
+          });
         }
       };
 
@@ -77,7 +86,16 @@ const MessagesContextProvider = (props) => {
         socket.close();
       }
     };
-  }, [isLoggedIn, token]);
+  }, [isLoggedIn, token, userId]);
+
+  const readMessage = (id) => {
+    setUnreadMessages((prevUnreadMessages) => {
+      if (prevUnreadMessages.includes(id)) {
+        return prevUnreadMessages.filter((userId) => userId !== id);
+      }
+      return prevUnreadMessages;
+    });
+  };
 
   return (
     <MessagesContext.Provider
@@ -86,6 +104,7 @@ const MessagesContextProvider = (props) => {
         unreadMessages,
         isLoadingMessages,
         getMessages: getMessagesHandler,
+        readMessage: readMessage,
       }}
     >
       {props.children}

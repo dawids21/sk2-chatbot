@@ -65,8 +65,7 @@
         socket.send(
           JSON.stringify({
             operation: "/start",
-            user_id: parseInt(from),
-            token: "12345",
+            token: from,
           })
         );
         document.getElementById("message").value = "";
