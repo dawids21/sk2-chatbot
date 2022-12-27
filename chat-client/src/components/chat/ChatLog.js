@@ -1,20 +1,19 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import backend from "../../config/backend";
 import AuthContext from "../../context/auth-context";
-import useSnackbar from "../../hooks/use-snackbar";
+import MessagesContext from "../../context/messages-context";
 import CenterCircularProgress from "../ui/CenterCircularProgress";
 import Message from "./Message";
 
 const ChatLog = ({ userId }) => {
   const [username, setUsername] = useState("");
   const [myUsername, setMyUsername] = useState("");
-  const [messages, setMessages] = useState([]);
   const [isUsernameLoading, setIsUsernameLoading] = useState(true);
   const [isMyUsernameLoading, setIsMyUsernameLoading] = useState(true);
-  const [areMessagesLoading, setAreMessagesLoading] = useState(true);
   const { token, getInfo } = useContext(AuthContext);
-  const alert = useSnackbar();
   const messageRef = useRef(null);
+  const { messages, isLoadingMessages, getMessages } =
+    useContext(MessagesContext);
   useEffect(() => {
     const getUser = async () => {
       setIsUsernameLoading(true);
@@ -48,32 +47,13 @@ const ChatLog = ({ userId }) => {
   }, [getInfo]);
 
   useEffect(() => {
-    const getMessages = async () => {
-      setAreMessagesLoading(true);
-      const response = await fetch(`${backend.url}/messages`, {
-        method: "POST",
-        body: JSON.stringify({ friend_id: userId }),
-        headers: {
-          Authorization: token,
-        },
-      });
-      if (response.status !== 200) {
-        alert("Can't get messages", "error");
-        setMessages([]);
-        setAreMessagesLoading(false);
-        return;
-      }
-      const data = await response.json();
-      setMessages(data);
-      setAreMessagesLoading(false);
-    };
-    getMessages();
-  }, [userId, token, alert]);
+    getMessages(userId);
+  }, [userId, getMessages]);
 
   const isLoading =
-    isUsernameLoading || isMyUsernameLoading || areMessagesLoading;
+    isUsernameLoading || isMyUsernameLoading || isLoadingMessages;
 
-  const getMessages = () => {
+  const getMessageElements = () => {
     let result = [];
     for (let index = 0; index < messages.length; index++) {
       const message = messages[index];
@@ -107,7 +87,9 @@ const ChatLog = ({ userId }) => {
     messageRef.current?.scrollIntoView();
   }, [isLoading]);
 
-  return <>{isLoading ? <CenterCircularProgress /> : <>{getMessages()}</>}</>;
+  return (
+    <>{isLoading ? <CenterCircularProgress /> : <>{getMessageElements()}</>}</>
+  );
 };
 
 export default ChatLog;
