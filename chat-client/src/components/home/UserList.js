@@ -1,7 +1,12 @@
 import { Button, Paper, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
-const UserList = ({ users, friends, addFriendHandler, removeFriendHandler }) => {
+const UserList = ({
+  users,
+  friends,
+  addFriendHandler,
+  removeFriendHandler,
+}) => {
   const navigate = useNavigate();
   if (users.length === 0) {
     return;
@@ -9,19 +14,26 @@ const UserList = ({ users, friends, addFriendHandler, removeFriendHandler }) => 
   const friendIds = friends.map((friend) => friend.id);
   const addButton = (user) => {
     return (
-      <Button variant="outlined" onClick={() => addFriendHandler(user.id, user.username)}>
+      <Button
+        variant="outlined"
+        onClick={(event) => addFriendHandler(event, user.id, user.username)}
+      >
         Add
       </Button>
     );
   };
   const removeButton = (user) => {
     return (
-      <Button variant="outlined" color="error" onClick={() => removeFriendHandler(user.id)}>
+      <Button
+        variant="outlined"
+        color="error"
+        onClick={(event) => removeFriendHandler(event, user.id)}
+      >
         Remove
       </Button>
     );
   };
-  
+
   const handleClick = (userId) => {
     if (!friendIds.includes(userId)) {
       return;

@@ -58,33 +58,41 @@ const Home = () => {
     return () => clearTimeout(handler);
   }, [nameInput.value, alert, token]);
 
-  const addFriendHandler = async (friendId, friendUsername) => {
+  const addFriendHandler = async (event, friendId, friendUsername) => {
+    event.stopPropagation();
     const response = await fetch(`${backend.url}/friends`, {
       method: "POST",
       body: JSON.stringify({ friend_id: friendId }),
       headers: {
-        Authorization: token
-      }
+        Authorization: token,
+      },
     });
     if (response.status !== 200) {
       alert("Something went wrong!", "error");
     }
-    setFriends(prevFriends => [...prevFriends, { id: friendId, username: friendUsername }]);
-  }
+    setFriends((prevFriends) => [
+      ...prevFriends,
+      { id: friendId, username: friendUsername },
+    ]);
+  };
 
-  const removeFriendHandler = async (friendId) => {
+  const removeFriendHandler = async (event, friendId) => {
+    console.log("remove");
+    event.stopPropagation();
     const response = await fetch(`${backend.url}/friends`, {
       method: "DELETE",
       body: JSON.stringify({ friend_id: friendId }),
       headers: {
-        Authorization: token
-      }
+        Authorization: token,
+      },
     });
     if (response.status !== 200) {
       alert("Something went wrong!", "error");
     }
-    setFriends(prevFriends => prevFriends.filter((friend) => friend.id !== friendId));
-  }
+    setFriends((prevFriends) =>
+      prevFriends.filter((friend) => friend.id !== friendId)
+    );
+  };
 
   return (
     <>
@@ -96,7 +104,12 @@ const Home = () => {
       {users.length !== 0 ? (
         <Container maxWidth="sm" sx={{ mt: 2 }}>
           <Paper sx={{ p: 2 }}>
-            <UserList users={users} friends={friends} addFriendHandler={addFriendHandler} removeFriendHandler={removeFriendHandler} />
+            <UserList
+              users={users}
+              friends={friends}
+              addFriendHandler={addFriendHandler}
+              removeFriendHandler={removeFriendHandler}
+            />
           </Paper>
         </Container>
       ) : null}
