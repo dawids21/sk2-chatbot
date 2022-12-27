@@ -62,7 +62,7 @@ const ChatLog = ({ userId }) => {
         messageElement = (
           <Message
             key={message.id}
-            name={message.user_id === parseInt(userId) ? username : myUsername}
+            name={message.user_id === userId ? username : myUsername}
             timestamp={new Date(message.timestamp)}
             message={message.message}
             ref={messageRef}
@@ -72,7 +72,7 @@ const ChatLog = ({ userId }) => {
         messageElement = (
           <Message
             key={message.id}
-            name={message.user_id === parseInt(userId) ? username : myUsername}
+            name={message.user_id === userId ? username : myUsername}
             timestamp={new Date(message.timestamp)}
             message={message.message}
           />
@@ -85,7 +85,7 @@ const ChatLog = ({ userId }) => {
 
   useEffect(() => {
     messageRef.current?.scrollIntoView();
-  }, [isLoading]);
+  }, [isLoading, messages]);
 
   return (
     <>{isLoading ? <CenterCircularProgress /> : <>{getMessageElements()}</>}</>

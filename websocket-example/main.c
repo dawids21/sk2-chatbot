@@ -1,9 +1,9 @@
+#include "cJSON.h"
+#include "wsServer/ws.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <string.h>
-#include "wsServer/ws.h"
-#include "cJSON.h"
+#include <unistd.h>
 
 ws_cli_conn_t *clients[100];
 
@@ -21,18 +21,25 @@ void onclose(ws_cli_conn_t *client)
     printf("Connection closed, addr: %s\n", cli);
 }
 
-void onmessage(ws_cli_conn_t *client,
-               const unsigned char *msg, uint64_t size, int type)
+void onmessage(ws_cli_conn_t *client, const unsigned char *msg, uint64_t size, int type)
 {
     const char *message = (const char *)msg;
     cJSON *json = cJSON_Parse(message);
     cJSON *operation = cJSON_GetObjectItemCaseSensitive(json, "operation");
     if (strcmp(operation->valuestring, "/start") == 0)
     {
-        cJSON *user_id = cJSON_GetObjectItemCaseSensitive(json, "user_id");
         cJSON *token = cJSON_GetObjectItemCaseSensitive(json, "token");
         // validate token...
-        clients[user_id->valueint] = client;
+        int user_id;
+        if (strcmp(token->valuestring, "12345") == 0)
+        {
+            user_id = 1;
+        }
+        else
+        {
+            user_id = atoi(token->valuestring);
+        }
+        clients[user_id] = client;
     }
     else if (strcmp(operation->valuestring, "/message") == 0)
     {

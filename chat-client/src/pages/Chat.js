@@ -10,7 +10,8 @@ import AuthContext from "../context/auth-context";
 import useSnackbar from "../hooks/use-snackbar";
 
 const Chat = () => {
-  const { userId } = useParams();
+  const { userId: userIdStr } = useParams();
+  const userId = userIdStr !== undefined ? parseInt(userIdStr) : null;
   const [friends, setFriends] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const { isLoggedIn, token } = useContext(AuthContext);
@@ -40,7 +41,7 @@ const Chat = () => {
         {isLoading ? <CenterCircularProgress /> : <UserList users={friends} />}
       </Grid2>
       <Grid2 xs={10}>
-        {userId !== undefined ? (
+        {userId ? (
           <Box
             sx={{
               overflow: "hidden",
