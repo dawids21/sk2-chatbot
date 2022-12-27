@@ -3,7 +3,7 @@ import { forwardRef } from "react";
 
 const Message = forwardRef(({ name, timestamp, message }, ref) => {
   return (
-    <Typography variant="h2" ref={ref !== undefined ? ref : null}>
+    <Typography variant="body1" ref={ref !== undefined ? ref : null}>
       {`${name} (${timestamp.toLocaleDateString("pl-PL", {
         year: "numeric",
         month: "numeric",
