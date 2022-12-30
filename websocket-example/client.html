@@ -22,7 +22,7 @@
     <button id="send">Send</button>
 
     <script>
-        var socket = new WebSocket("ws://127.0.0.1:5000");
+      var socket = new WebSocket("ws://127.0.0.1:1101");
 
         socket.onmessage = () => {
             const message = JSON.parse(event.data);
@@ -71,4 +71,3 @@
     </script>
 </body>
 
-</html>
