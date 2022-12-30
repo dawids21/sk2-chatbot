@@ -144,9 +144,30 @@ cJSON *add_friend(cJSON *request, int user_id, http_status *response_status)
         return NULL;
     }
 
-    
+    int rc;
+    sqlite3 *db;
+    rc = sqlite3_open("chat-db.db", &db);
+    sqlite3_stmt *stmt;
 
     cJSON *friend_id = cJSON_GetObjectItemCaseSensitive(request, "friend_id");
+    char *sql = "INSERT INTO friends VALUES(?, ?)";
+    rc = sqlite3_prepare_v2(db, sql, -1, &stmt, 0);
+
+    if(stmt != NULL) {
+        sqlite3_bind_int(stmt, 1, user_id);
+        sqlite3_bind_int(stmt, 2, friend_id);
+        sqlite3_step(stmt);
+    }
+
+    rc = sqlite3_prepare_v2(db, sql, -1, &stmt, 0);
+
+    if(stmt != NULL){
+        sqlite3_bind_int(stmt, 2, user_id);
+        sqlite3_bind_int(stmt, 1, friend_id);
+        sqlite3_step(stmt);
+        sqlite3_finalize(stmt);
+    }
+
     printf("Add friend: %d\n", friend_id->valueint);
 
     *response_status = HTTP_OK;
