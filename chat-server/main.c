@@ -1,5 +1,6 @@
 #include "cJSON.h"
 #include "controller.h"
+#include "messages_service.h"
 #include "requests.h"
 #include <arpa/inet.h>
 #include <errno.h>
@@ -19,6 +20,7 @@ void int_handler(int sign)
 {
     shutdown(serverSocket, SHUT_RD);
     close(serverSocket);
+    close_messages();
 }
 
 void *socketThread(void *arg)
@@ -78,6 +80,8 @@ int main(int argc, char const *argv[])
     else
         printf("Error\n");
     pthread_t thread_id;
+
+    setup_messages();
 
     while (1)
     {
