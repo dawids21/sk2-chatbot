@@ -1,6 +1,22 @@
 #include "user_service.h"
 #include <stdio.h>
 #include <string.h>
+#include <sqlite3.h>
+
+
+// char* gen_random() {
+//     static const char alphanum[] =
+//         "0123456789"
+//         "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+//         "abcdefghijklmnopqrstuvwxyz";
+//     char tmp_s[50];
+
+//     for (int i = 0; i < 50; ++i) {
+//         tmp_s[i] = alphanum[rand() % (sizeof(alphanum) - 1)];
+//     }
+    
+//     return tmp_s;
+// }
 
 int get_user_id(char *token)
 {
@@ -17,13 +33,28 @@ int get_user_id(char *token)
 
 cJSON *register_user(cJSON *request, int user_id, http_status *response_status)
 {
+    int rc;
+    sqlite3 *db;
+    rc = sqlite3_open("chat-db.db", &db);
+    sqlite3_stmt *stmt;
+
     cJSON *username = cJSON_GetObjectItemCaseSensitive(request, "username");
     cJSON *password = cJSON_GetObjectItemCaseSensitive(request, "password");
 
-    printf("Username: %s, password: %s\n", username->valuestring, password->valuestring);
+    char *sql = "INSERT INTO users(username, password) VALUES(?, ?)";
+
+    rc = sqlite3_prepare_v2(db, sql, -1, &stmt, 0);
+
+    
+    if(stmt != NULL) {
+        sqlite3_bind_text(stmt, 1, username->valuestring, -1, SQLITE_TRANSIENT);
+        sqlite3_bind_text(stmt, 2, password->valuestring, -1, SQLITE_TRANSIENT);
+        sqlite3_step(stmt);
+        sqlite3_finalize(stmt);
+    }
 
     cJSON *response_json = cJSON_CreateObject();
-    cJSON_AddNumberToObject(response_json, "id", 1);
+    cJSON_AddNumberToObject(response_json, "id", 1);  //todo pobrac id
     cJSON_AddStringToObject(response_json, "username", username->valuestring);
     *response_status = HTTP_OK;
     return response_json;
@@ -44,45 +75,62 @@ cJSON *login(cJSON *request, int user_id, http_status *response_status)
 
 cJSON *get_users(cJSON *request, int user_id, http_status *response_status)
 {
-    if (user_id == 0)
-    {
-        *response_status = HTTP_UNAUTHORIZED;
-        return NULL;
-    }
+    // if (user_id == 0)
+    // {
+    //     *response_status = HTTP_UNAUTHORIZED;
+    //     return NULL;
+    // }
 
+    int rc;
+    sqlite3 *db;
+    rc = sqlite3_open("chat-db.db", &db);
+    sqlite3_stmt *stmt;
+
+    char *sql = "SELECT user_id, username FROM users";
+    rc = sqlite3_prepare_v2(db, sql, -1, &stmt, 0);
     cJSON *response_json = cJSON_CreateArray();
-    cJSON *user_json = cJSON_CreateObject();
-    cJSON_AddNumberToObject(user_json, "id", 1);
-    cJSON_AddStringToObject(user_json, "username", "dawids21");
-    cJSON_AddItemToArray(response_json, user_json);
-    user_json = cJSON_CreateObject();
-    cJSON_AddNumberToObject(user_json, "id", 2);
-    cJSON_AddStringToObject(user_json, "username", "jan");
-    cJSON_AddItemToArray(response_json, user_json);
-    user_json = cJSON_CreateObject();
-    cJSON_AddNumberToObject(user_json, "id", 3);
-    cJSON_AddStringToObject(user_json, "username", "adam");
-    cJSON_AddItemToArray(response_json, user_json);
+    if(stmt != NULL){
+            while (sqlite3_step(stmt) != SQLITE_DONE){
+                cJSON *user_json = cJSON_CreateObject();
+                cJSON_AddNumberToObject(user_json, "user_id", sqlite3_column_int(stmt, 0));
+                cJSON_AddStringToObject(user_json, "username", sqlite3_column_text(stmt, 1));
+                cJSON_AddItemToArray(response_json, user_json);
+            }
+    }
+    sqlite3_finalize(stmt);
     *response_status = HTTP_OK;
     return response_json;
 }
 
 cJSON *get_users_by_username(cJSON *request, int user_id, http_status *response_status)
 {
-    if (user_id == 0)
-    {
-        *response_status = HTTP_UNAUTHORIZED;
-        return NULL;
-    }
+    // if (user_id == 0)
+    // {
+    //     *response_status = HTTP_UNAUTHORIZED;
+    //     return NULL;
+    // }
+
+    int rc;
+    sqlite3 *db;
+    rc = sqlite3_open("chat-db.db", &db);
+    sqlite3_stmt *stmt;
 
     cJSON *username = cJSON_GetObjectItemCaseSensitive(request, "username");
-    printf("Find by username: %s\n", username->valuestring);
 
+    char *sql = "SELECT user_id, username FROM users WHERE username LIKE ?";
+    rc = sqlite3_prepare_v2(db, sql, -1, &stmt, 0);
     cJSON *response_json = cJSON_CreateArray();
-    cJSON *user_json = cJSON_CreateObject();
-    cJSON_AddNumberToObject(user_json, "id", 2);
-    cJSON_AddStringToObject(user_json, "username", "jan");
-    cJSON_AddItemToArray(response_json, user_json);
+    if(stmt != NULL) {
+        sqlite3_bind_text(stmt, 1, username->valuestring, -1, SQLITE_TRANSIENT);
+
+        while (sqlite3_step(stmt) != SQLITE_DONE){
+                cJSON *user_json = cJSON_CreateObject();
+                cJSON_AddNumberToObject(user_json, "user_id", sqlite3_column_int(stmt, 0));
+                cJSON_AddStringToObject(user_json, "username", sqlite3_column_text(stmt, 1));
+                cJSON_AddItemToArray(response_json, user_json);
+        }
+        sqlite3_finalize(stmt);
+    }
     *response_status = HTTP_OK;
     return response_json;
 }
@@ -95,6 +143,8 @@ cJSON *add_friend(cJSON *request, int user_id, http_status *response_status)
         *response_status = HTTP_UNAUTHORIZED;
         return NULL;
     }
+
+    
 
     cJSON *friend_id = cJSON_GetObjectItemCaseSensitive(request, "friend_id");
     printf("Add friend: %d\n", friend_id->valueint);
