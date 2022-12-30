@@ -1,18 +1,17 @@
-#include "requests.h"
 #include "cJSON.h"
 #include "controller.h"
+#include "requests.h"
+#include <arpa/inet.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <netinet/in.h>
+#include <pthread.h>
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys/socket.h>
-#include <netinet/in.h>
-#include <string.h>
-#include <arpa/inet.h>
-#include <fcntl.h>
 #include <unistd.h>
-#include <pthread.h>
-#include <errno.h>
-#include <signal.h>
-#include <string.h>
 
 static int serverSocket;
 
@@ -24,9 +23,16 @@ void int_handler(int sign)
 
 void *socketThread(void *arg)
 {
-    int socket = *((int *)arg);
+    int *socket = (int *)arg;
 
-    request *request = get_request(socket);
+    request *request = get_request(*socket);
+    if (!request)
+    {
+        printf("closing socket %d\n", *socket);
+        close(*socket);
+        free(socket);
+        pthread_exit(NULL);
+    }
     printf("%s\n", request->method);
     printf("%s\n", request->path);
     if (request->has_auth == true)
@@ -39,11 +45,12 @@ void *socketThread(void *arg)
     }
 
     char *response = handle_request(request);
-    send(socket, response, strlen(response), 0);
+    send(*socket, response, strlen(response), 0);
 
-    close(socket);
+    close(*socket);
     destroy_request(request);
     free(response);
+    free(socket);
 
     pthread_exit(NULL);
 }
@@ -51,7 +58,6 @@ void *socketThread(void *arg)
 int main(int argc, char const *argv[])
 {
     signal(SIGINT, int_handler);
-    int newSocket;
     struct sockaddr_in serverAddr;
     struct sockaddr_storage serverStorage;
     socklen_t addr_size;
@@ -74,12 +80,19 @@ int main(int argc, char const *argv[])
     while (1)
     {
         addr_size = sizeof serverStorage;
-        newSocket = accept(serverSocket, (struct sockaddr *)&serverStorage, &addr_size);
-        if (newSocket == -1)
+        int *newSocket = malloc(1 * sizeof(int));
+        if (!newSocket)
         {
+            fprintf(stderr, "Memory allocation failed!\n");
+            continue;
+        }
+        *newSocket = accept(serverSocket, (struct sockaddr *)&serverStorage, &addr_size);
+        if (*newSocket == -1)
+        {
+            free(newSocket);
             break;
         }
-        if (pthread_create(&thread_id, NULL, socketThread, &newSocket) != 0)
+        if (pthread_create(&thread_id, NULL, socketThread, newSocket) != 0)
             printf("Failed to create thread\n");
 
         pthread_detach(thread_id);

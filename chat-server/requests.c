@@ -1,22 +1,35 @@
 #include "requests.h"
-#include "picohttpparser.h"
 #include "cJSON.h"
-#include <stdlib.h>
-#include <stdbool.h>
-#include <string.h>
-#include <stdio.h>
-#include <errno.h>
+#include "picohttpparser.h"
 #include <assert.h>
-#include <sys/socket.h>
+#include <errno.h>
 #include <netinet/in.h>
+#include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
 
 request *get_request(int socket)
 {
     request *result = malloc(sizeof(request));
+
+    if (!result)
+    {
+        fprintf(stderr, "Memory allocation failed!\n");
+        return NULL;
+    }
+
     int buf_size = 1024;
     char *buf = malloc(buf_size * sizeof(char));
+    if (!buf)
+    {
+        fprintf(stderr, "Memory allocation failed!\n");
+        free(result);
+        return NULL;
+    }
     memset(buf, '\0', buf_size * sizeof(char));
     struct phr_header headers[100];
     size_t num_headers = sizeof(headers) / sizeof(headers[0]);
@@ -29,18 +42,20 @@ request *get_request(int socket)
     {
         printf("Problem with connection");
         free(buf);
+        free(result);
         return NULL;
     }
     buf_length += bytes;
     size_t method_len, path_len;
     const char *path, *method;
     int minor_version;
-    parsed = phr_parse_request(buf, buf_length, &method, &method_len, &path, &path_len,
-                               &minor_version, headers, &num_headers, 0);
+    parsed = phr_parse_request(buf, buf_length, &method, &method_len, &path, &path_len, &minor_version, headers,
+                               &num_headers, 0);
     if (parsed == -1)
     {
         printf("Problem with parsing");
         free(buf);
+        free(result);
         return NULL;
     }
     int content_length = 0;
@@ -50,7 +65,8 @@ request *get_request(int socket)
         {
             content_length = atoi(headers[i].value);
             char *end_request_ptr = strstr(buf, "\r\n\r\n");
-            if (end_request_ptr != NULL && buf_size - ((end_request_ptr + 4 - buf) / sizeof(char)) >= content_length + 1)
+            if (end_request_ptr != NULL &&
+                buf_size - ((end_request_ptr + 4 - buf) / sizeof(char)) >= content_length + 1)
             {
                 break;
             }
@@ -73,15 +89,18 @@ request *get_request(int socket)
         if (bytes <= 0)
         {
             printf("Problem with connection");
+            free(buf);
+            free(result);
             return NULL;
         }
         buf_length += bytes;
-        parsed = phr_parse_request(buf, buf_length, &method, &method_len, &path, &path_len,
-                                   &minor_version, headers, &num_headers, 0);
+        parsed = phr_parse_request(buf, buf_length, &method, &method_len, &path, &path_len, &minor_version, headers,
+                                   &num_headers, 0);
         if (parsed == -1)
         {
             printf("Problem with parsing");
             free(buf);
+            free(result);
             return NULL;
         }
         end_request_ptr = strstr(buf, "\r\n\r\n");
@@ -181,7 +200,10 @@ char *get_response(http_status status, cJSON *payload)
     {
         status_str = "500 Internal Server Error";
     }
-    sprintf(response, "HTTP/1.1 %s\r\nAccess-Control-Allow-Origin: http://localhost:3000\r\nAccess-Control-Allow-Headers: *\r\nAccess-Control-Allow-Methods: *\r\nContent-Type: application/json\r\n\r\n%s", status_str, body);
+    sprintf(response,
+            "HTTP/1.1 %s\r\nAccess-Control-Allow-Origin: http://localhost:3000\r\nAccess-Control-Allow-Headers: "
+            "*\r\nAccess-Control-Allow-Methods: *\r\nContent-Type: application/json\r\n\r\n%s",
+            status_str, body);
     free(body);
     return response;
 }
