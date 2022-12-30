@@ -21,8 +21,9 @@ CREATE TABLE messages(
     friend_id INTEGER,
     timestamp TEXT);
 
-CREATE TABLE loogged_in_users(
-    
+-- CREATE TABLE loogged_in_users(
+--     user_id INTEGER,
+--     token TEXT);
 
 
 
@@ -41,7 +42,7 @@ INSERT INTO friends VALUES(3, 2);
 
 INSERT INTO messages VALUES('Hi', 1, 2, datetime('now', 'localtime'));
 INSERT INTO messages VALUES('Hi2', 2, 1, datetime('now', 'localtime'));
-INSERT INTO messages VALUES('Hello', 1, 3, datetime('now' 'localtime'));
+INSERT INTO messages VALUES('Hello', 1, 3, datetime('now', 'localtime'));
 INSERT INTO messages VALUES('Hello2', 3, 1, datetime('now', 'localtime'));
 INSERT INTO messages VALUES('Whats up', 2, 3, datetime('now', 'localtime'));
 INSERT INTO messages VALUES('Whats up2', 3, 2, datetime('now', 'localtime'));
