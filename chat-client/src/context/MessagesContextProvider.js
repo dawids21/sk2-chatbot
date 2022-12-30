@@ -9,9 +9,9 @@ const MessagesContextProvider = (props) => {
   const [unreadMessages, setUnreadMessages] = useState([]);
   const [isLoadingMessages, setIsLoadingMessages] = useState(false);
   const [userId, setUserId] = useState(null);
+  const [socket, setSocket] = useState(null);
   const alert = useSnackbar();
   const { token, isLoggedIn } = useContext(AuthContext);
-  const ws = useRef(null);
 
   const getMessagesHandler = useCallback(
     async (id) => {
@@ -38,12 +38,12 @@ const MessagesContextProvider = (props) => {
   );
 
   useEffect(() => {
-    let socket;
+    let ws;
     if (isLoggedIn && token) {
-      socket = new WebSocket("ws://localhost:5000");
+      ws = new WebSocket(backend.ws_url);
 
-      socket.onopen = () => {
-        socket.send(
+      ws.onopen = () => {
+        ws.send(
           JSON.stringify({
             operation: "/start",
             token: token,
@@ -51,42 +51,46 @@ const MessagesContextProvider = (props) => {
         );
       };
 
-      socket.onclose = () => {
+      ws.onclose = () => {
         console.log("closed");
       };
-
-      socket.onmessage = (event) => {
-        const data = JSON.parse(event.data);
-        const from = parseInt(data.from);
-        if (from === userId) {
-          setMessages((prevMessages) => [
-            ...prevMessages,
-            {
-              id: parseInt(data.id),
-              user_id: parseInt(data.user_id),
-              message: data.message,
-              timestamp: data.timestamp,
-            },
-          ]);
-        } else {
-          setUnreadMessages((prevUnreadMessages) => {
-            if (!prevUnreadMessages.includes(from)) {
-              return [...prevUnreadMessages, from];
-            }
-            return prevUnreadMessages;
-          });
-        }
-      };
-
-      ws.current = socket;
+      setSocket(ws);
     }
 
     return () => {
-      if (socket) {
-        socket.close();
+      if (ws) {
+        ws.close();
       }
     };
-  }, [isLoggedIn, token, userId]);
+  }, [isLoggedIn, token, backend.ws_url]);
+
+  useEffect(() => {
+    if (socket === null) {
+      return;
+    }
+    socket.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      const from = parseInt(data.from);
+      if (from === userId) {
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          {
+            id: parseInt(data.id),
+            user_id: parseInt(data.user_id),
+            message: data.message,
+            timestamp: data.timestamp,
+          },
+        ]);
+      } else {
+        setUnreadMessages((prevUnreadMessages) => {
+          if (!prevUnreadMessages.includes(from)) {
+            return [...prevUnreadMessages, from];
+          }
+          return prevUnreadMessages;
+        });
+      }
+    };
+  }, [socket, userId]);
 
   const readMessage = (id) => {
     setUnreadMessages((prevUnreadMessages) => {
