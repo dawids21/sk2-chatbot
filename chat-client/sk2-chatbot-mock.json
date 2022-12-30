@@ -1,0 +1,525 @@
+{
+  "uuid": "5f23a964-1199-4d31-9c8c-e83caddcdd45",
+  "lastMigration": 24,
+  "name": "Sk2 chatbot",
+  "endpointPrefix": "",
+  "latency": 300,
+  "port": 1100,
+  "hostname": "0.0.0.0",
+  "routes": [
+    {
+      "uuid": "2573f78b-6335-410e-8913-8683416db3b4",
+      "documentation": "",
+      "method": "post",
+      "endpoint": "login",
+      "responses": [
+        {
+          "uuid": "cae7be62-7cfd-4287-9ba4-a52deac4673f",
+          "body": "{\n  \"token\": \"12345\"\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true
+        }
+      ],
+      "enabled": true,
+      "responseMode": null
+    },
+    {
+      "uuid": "bd378ecb-e0f1-4723-9833-27385569951e",
+      "documentation": "",
+      "method": "post",
+      "endpoint": "register",
+      "responses": [
+        {
+          "uuid": "824af523-a04a-418a-af98-1d9198907023",
+          "body": "{\n  \"id\": 1,\n  \"username\": \"dawids21\"\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true
+        }
+      ],
+      "enabled": true,
+      "responseMode": null
+    },
+    {
+      "uuid": "b017ede8-684b-4c89-b84a-4467248fb986",
+      "documentation": "",
+      "method": "get",
+      "endpoint": "users",
+      "responses": [
+        {
+          "uuid": "b5a75da3-abf1-4999-8efb-6c2365250e2b",
+          "body": "[\n    {\n        \"id\": 1,\n        \"username\": \"dawids21\"\n    },\n    {\n        \"id\": 2,\n        \"username\": \"jan\"\n    },\n    {\n        \"id\": 3,\n        \"username\": \"adam\"\n    }\n]",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "header",
+              "modifier": "Authorization",
+              "value": "12345",
+              "invert": false,
+              "operator": "equals"
+            }
+          ],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false
+        },
+        {
+          "uuid": "c0738efe-4cf4-45ab-85ee-cee2c6740514",
+          "body": "",
+          "latency": 0,
+          "statusCode": 401,
+          "label": "",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true
+        }
+      ],
+      "enabled": true,
+      "responseMode": null
+    },
+    {
+      "uuid": "9d4ff5c5-e02a-43aa-be34-589a4ab8b00e",
+      "documentation": "",
+      "method": "post",
+      "endpoint": "users/username",
+      "responses": [
+        {
+          "uuid": "609e141b-6c51-44d4-bdb8-590913505b01",
+          "body": "[\n    {\n        \"id\": 2,\n        \"username\": \"jan\"\n    },\n    {\n        \"id\": 3,\n        \"username\": \"jan\"\n    },\n    {\n        \"id\": 4,\n        \"username\": \"jan\"\n    },\n    {\n        \"id\": 5,\n        \"username\": \"jan\"\n    },\n    {\n        \"id\": 6,\n        \"username\": \"jan\"\n    },\n    {\n        \"id\": 7,\n        \"username\": \"jan\"\n    },\n    {\n        \"id\": 8,\n        \"username\": \"jan\"\n    },\n    {\n        \"id\": 9,\n        \"username\": \"jan\"\n    },\n    {\n        \"id\": 10,\n        \"username\": \"jan\"\n    },\n    {\n        \"id\": 11,\n        \"username\": \"jan\"\n    },\n    {\n        \"id\": 12,\n        \"username\": \"jan\"\n    },\n    {\n        \"id\": 13,\n        \"username\": \"jan\"\n    },\n    {\n        \"id\": 14,\n        \"username\": \"jan\"\n    },\n    {\n        \"id\": 15,\n        \"username\": \"jan\"\n    },\n    {\n        \"id\": 16,\n        \"username\": \"jan\"\n    },\n    {\n        \"id\": 17,\n        \"username\": \"jan\"\n    },\n    {\n        \"id\": 18,\n        \"username\": \"jan\"\n    },\n    {\n        \"id\": 19,\n        \"username\": \"jan\"\n    },\n    {\n        \"id\": 20,\n        \"username\": \"jan\"\n    },\n    {\n        \"id\": 21,\n        \"username\": \"jan\"\n    }\n]",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "header",
+              "modifier": "Authorization",
+              "value": "12345",
+              "invert": false,
+              "operator": "equals"
+            }
+          ],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false
+        },
+        {
+          "uuid": "586921c6-9e20-4863-aa1b-839d7605f5e2",
+          "body": "",
+          "latency": 0,
+          "statusCode": 401,
+          "label": "",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true
+        }
+      ],
+      "enabled": true,
+      "responseMode": null
+    },
+    {
+      "uuid": "fa14e162-4526-4ec2-b403-f1f47d5a0ddd",
+      "documentation": "",
+      "method": "get",
+      "endpoint": "info/auth",
+      "responses": [
+        {
+          "uuid": "870c62e4-d269-4bb4-92a4-0fb827a2041a",
+          "body": "{\n    \"id\": 1,\n    \"username\": \"dawids21\"\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "header",
+              "modifier": "Authorization",
+              "value": "12345",
+              "invert": false,
+              "operator": "equals"
+            }
+          ],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false
+        },
+        {
+          "uuid": "a23555f9-8147-47c0-a16d-059d2b7ea015",
+          "body": "",
+          "latency": 0,
+          "statusCode": 401,
+          "label": "",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true
+        }
+      ],
+      "enabled": true,
+      "responseMode": null
+    },
+    {
+      "uuid": "876187b8-5307-4edb-8ed8-7ce60b1fdf86",
+      "documentation": "",
+      "method": "post",
+      "endpoint": "info",
+      "responses": [
+        {
+          "uuid": "4e887c7a-8e5f-4714-8a72-cd4242ab82c6",
+          "body": "{\n    \"id\": 3,\n    \"username\": \"adam\"\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "header",
+              "modifier": "Authorization",
+              "value": "12345",
+              "invert": false,
+              "operator": "equals"
+            }
+          ],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false
+        },
+        {
+          "uuid": "f2971c12-73da-4972-b0cd-8735a99a935d",
+          "body": "",
+          "latency": 0,
+          "statusCode": 401,
+          "label": "",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true
+        }
+      ],
+      "enabled": true,
+      "responseMode": null
+    },
+    {
+      "uuid": "9a961528-aab1-44cd-9caa-0e1f2a6b9128",
+      "documentation": "",
+      "method": "post",
+      "endpoint": "friends",
+      "responses": [
+        {
+          "uuid": "a9a6f9c2-3fbf-46dd-b525-554f9f044353",
+          "body": "",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "header",
+              "modifier": "Authorization",
+              "value": "12345",
+              "invert": false,
+              "operator": "equals"
+            }
+          ],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false
+        },
+        {
+          "uuid": "129fd172-723a-485e-ba81-9a3e2105fc7a",
+          "body": "",
+          "latency": 0,
+          "statusCode": 401,
+          "label": "",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true
+        }
+      ],
+      "enabled": true,
+      "responseMode": null
+    },
+    {
+      "uuid": "0e4427bf-f099-4678-a21f-a92e2aad97a0",
+      "documentation": "",
+      "method": "delete",
+      "endpoint": "friends",
+      "responses": [
+        {
+          "uuid": "dd9ecf1e-d733-4f93-8004-3505c37c6bb1",
+          "body": "",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "header",
+              "modifier": "Authorization",
+              "value": "12345",
+              "invert": false,
+              "operator": "equals"
+            }
+          ],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false
+        },
+        {
+          "uuid": "d58d30e0-a112-4f03-a4bd-1c931d5c9d45",
+          "body": "",
+          "latency": 0,
+          "statusCode": 401,
+          "label": "",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true
+        }
+      ],
+      "enabled": true,
+      "responseMode": null
+    },
+    {
+      "uuid": "26708b4b-d483-4034-ab07-36c89b5ac99c",
+      "documentation": "",
+      "method": "get",
+      "endpoint": "friends",
+      "responses": [
+        {
+          "uuid": "245d88a3-9592-4b9d-8ac1-941b81536c2f",
+          "body": "[\n    {\n        \"id\": 3,\n        \"username\": \"adam\"\n    },\n    {\n        \"id\": 4,\n        \"username\": \"jan\"\n    }\n]",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "header",
+              "modifier": "Authorization",
+              "value": "12345",
+              "invert": false,
+              "operator": "equals"
+            }
+          ],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false
+        },
+        {
+          "uuid": "ba28e061-a7cd-4157-b16d-11290bd5ac28",
+          "body": "",
+          "latency": 0,
+          "statusCode": 401,
+          "label": "",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true
+        }
+      ],
+      "enabled": true,
+      "responseMode": null
+    },
+    {
+      "uuid": "756362a4-bc93-4455-9ba4-acaeec08cb8e",
+      "documentation": "",
+      "method": "post",
+      "endpoint": "messages",
+      "responses": [
+        {
+          "uuid": "21f3fc89-faf6-48dd-aa99-54b0efb9d871",
+          "body": "[\n    {\n        \"id\": 1,\n        \"user_id\": 1,\n        \"message\": \"Siema\",\n        \"timestamp\": \"2022-12-19T15:45:33\"\n    },\n    {\n        \"id\": 2,\n        \"user_id\": 3,\n        \"message\": \"Elo\",\n        \"timestamp\": \"2022-12-19T15:52:41\"\n    },\n    {\n        \"id\": 3,\n        \"user_id\": 3,\n        \"message\": \"Elo\",\n        \"timestamp\": \"2022-12-19T16:52:41\"\n    },\n    {\n        \"id\": 4,\n        \"user_id\": 3,\n        \"message\": \"Elo\",\n        \"timestamp\": \"2022-12-19T17:52:41\"\n    },\n    {\n        \"id\": 5,\n        \"user_id\": 3,\n        \"message\": \"Elo\",\n        \"timestamp\": \"2022-12-19T18:52:41\"\n    },\n    {\n        \"id\": 6,\n        \"user_id\": 3,\n        \"message\": \"Elo\",\n        \"timestamp\": \"2022-12-19T19:52:41\"\n    },\n    {\n        \"id\": 7,\n        \"user_id\": 3,\n        \"message\": \"Elo\",\n        \"timestamp\": \"2022-12-19T20:52:41\"\n    },\n    {\n        \"id\": 8,\n        \"user_id\": 3,\n        \"message\": \"Elo\",\n        \"timestamp\": \"2022-12-19T21:52:41\"\n    },\n    {\n        \"id\": 9,\n        \"user_id\": 3,\n        \"message\": \"Elo\",\n        \"timestamp\": \"2022-12-19T22:52:41\"\n    },\n    {\n        \"id\": 10,\n        \"user_id\": 3,\n        \"message\": \"Elo\",\n        \"timestamp\": \"2022-12-19T23:52:41\"\n    },\n    {\n        \"id\": 11,\n        \"user_id\": 3,\n        \"message\": \"Elo\",\n        \"timestamp\": \"2022-12-20T00:52:41\"\n    },\n    {\n        \"id\": 12,\n        \"user_id\": 3,\n        \"message\": \"Elo\",\n        \"timestamp\": \"2022-12-20T01:52:41\"\n    },\n    {\n        \"id\": 13,\n        \"user_id\": 3,\n        \"message\": \"Elo\",\n        \"timestamp\": \"2022-12-20T02:52:41\"\n    },\n    {\n        \"id\": 14,\n        \"user_id\": 3,\n        \"message\": \"Elo\",\n        \"timestamp\": \"2022-12-20T03:52:41\"\n    },\n    {\n        \"id\": 15,\n        \"user_id\": 3,\n        \"message\": \"Elo\",\n        \"timestamp\": \"2022-12-20T04:52:41\"\n    },\n    {\n        \"id\": 16,\n        \"user_id\": 3,\n        \"message\": \"Elo\",\n        \"timestamp\": \"2022-12-20T05:52:41\"\n    },\n    {\n        \"id\": 17,\n        \"user_id\": 3,\n        \"message\": \"Elo\",\n        \"timestamp\": \"2022-12-20T06:52:41\"\n    },\n    {\n        \"id\": 18,\n        \"user_id\": 3,\n        \"message\": \"Elo\",\n        \"timestamp\": \"2022-12-20T07:52:41\"\n    },\n    {\n        \"id\": 19,\n        \"user_id\": 3,\n        \"message\": \"Elo\",\n        \"timestamp\": \"2022-12-20T08:52:41\"\n    }\n]",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "header",
+              "modifier": "Authorization",
+              "value": "12345",
+              "invert": false,
+              "operator": "equals"
+            }
+          ],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false
+        },
+        {
+          "uuid": "c85a42e3-6d2d-4702-b9ad-8c6b8f9f577a",
+          "body": "",
+          "latency": 0,
+          "statusCode": 401,
+          "label": "",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true
+        }
+      ],
+      "enabled": true,
+      "responseMode": null
+    }
+  ],
+  "proxyMode": false,
+  "proxyHost": "",
+  "proxyRemovePrefix": false,
+  "tlsOptions": {
+    "enabled": false,
+    "type": "CERT",
+    "pfxPath": "",
+    "certPath": "",
+    "keyPath": "",
+    "caPath": "",
+    "passphrase": ""
+  },
+  "cors": true,
+  "headers": [
+    {
+      "key": "Content-Type",
+      "value": "application/json"
+    },
+    {
+      "key": "Access-Control-Allow-Origin",
+      "value": "*"
+    },
+    {
+      "key": "Access-Control-Allow-Methods",
+      "value": "GET,POST,PUT,PATCH,DELETE,HEAD,OPTIONS"
+    },
+    {
+      "key": "Access-Control-Allow-Headers",
+      "value": "Content-Type, Origin, Accept, Authorization, Content-Length, X-Requested-With"
+    }
+  ],
+  "proxyReqHeaders": [
+    {
+      "key": "",
+      "value": ""
+    }
+  ],
+  "proxyResHeaders": [
+    {
+      "key": "",
+      "value": ""
+    }
+  ],
+  "data": []
+}
