@@ -7,10 +7,8 @@ import Message from "./Message";
 
 const ChatLog = ({ userId }) => {
   const [username, setUsername] = useState("");
-  const [myUsername, setMyUsername] = useState("");
   const [isUsernameLoading, setIsUsernameLoading] = useState(true);
-  const [isMyUsernameLoading, setIsMyUsernameLoading] = useState(true);
-  const { token, getInfo } = useContext(AuthContext);
+  const { token, username: myUsername } = useContext(AuthContext);
   const messageRef = useRef(null);
   const { messages, isLoadingMessages, getMessages } =
     useContext(MessagesContext);
@@ -37,21 +35,10 @@ const ChatLog = ({ userId }) => {
   }, [userId, token]);
 
   useEffect(() => {
-    const setInfo = async () => {
-      setIsMyUsernameLoading(true);
-      const info = await getInfo();
-      setMyUsername(info.username);
-      setIsMyUsernameLoading(false);
-    };
-    setInfo();
-  }, [getInfo]);
-
-  useEffect(() => {
     getMessages(userId);
   }, [userId, getMessages]);
 
-  const isLoading =
-    isUsernameLoading || isMyUsernameLoading || isLoadingMessages;
+  const isLoading = isUsernameLoading || isLoadingMessages;
 
   const getMessageElements = () => {
     let result = [];
@@ -61,7 +48,7 @@ const ChatLog = ({ userId }) => {
       if (index === messages.length - 1) {
         messageElement = (
           <Message
-            key={message.id}
+            key={message.timestamp}
             name={message.user_id === userId ? username : myUsername}
             timestamp={new Date(message.timestamp)}
             message={message.message}
@@ -71,7 +58,7 @@ const ChatLog = ({ userId }) => {
       } else {
         messageElement = (
           <Message
-            key={message.id}
+            key={message.timestamp}
             name={message.user_id === userId ? username : myUsername}
             timestamp={new Date(message.timestamp)}
             message={message.message}

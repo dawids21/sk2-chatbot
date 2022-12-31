@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useRef, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import backend from "../config/backend";
 import useSnackbar from "../hooks/use-snackbar";
 import AuthContext from "./auth-context";
@@ -11,7 +11,7 @@ const MessagesContextProvider = (props) => {
   const [userId, setUserId] = useState(null);
   const [socket, setSocket] = useState(null);
   const alert = useSnackbar();
-  const { token, isLoggedIn } = useContext(AuthContext);
+  const { token, isLoggedIn, id } = useContext(AuthContext);
 
   const getMessagesHandler = useCallback(
     async (id) => {
@@ -62,7 +62,7 @@ const MessagesContextProvider = (props) => {
         ws.close();
       }
     };
-  }, [isLoggedIn, token, backend.ws_url]);
+  }, [isLoggedIn, token]);
 
   useEffect(() => {
     if (socket === null) {
@@ -101,6 +101,26 @@ const MessagesContextProvider = (props) => {
     });
   };
 
+  const sendMessage = (message) => {
+    if (!socket) {
+      alert("Could not send message", "error");
+    }
+    const toSend = {
+      operation: "/message",
+      from: id,
+      to: userId,
+      timestamp: new Date().toISOString(),
+      message,
+    };
+    try {
+      socket.send(JSON.stringify(toSend));
+    } catch (error) {
+      alert("Could not send message", "error");
+      return;
+    }
+    setMessages((prevMessages) => [...prevMessages, toSend]);
+  };
+
   return (
     <MessagesContext.Provider
       value={{
@@ -109,6 +129,7 @@ const MessagesContextProvider = (props) => {
         isLoadingMessages,
         getMessages: getMessagesHandler,
         readMessage: readMessage,
+        sendMessage,
       }}
     >
       {props.children}

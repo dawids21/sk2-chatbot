@@ -6,6 +6,7 @@ const MessagesContext = React.createContext({
   getMessages: async (id) => {},
   isLoadingMessages: false,
   readMessage: (id) => {},
+  sendMessage: (message) => {},
 });
 
 export default MessagesContext;
