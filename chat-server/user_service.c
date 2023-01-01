@@ -2,21 +2,20 @@
 #include <stdio.h>
 #include <string.h>
 #include <sqlite3.h>
+#include <time.h>
+#include <stdlib.h>
 
 
-// char* gen_random() {
-//     static const char alphanum[] =
-//         "0123456789"
-//         "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-//         "abcdefghijklmnopqrstuvwxyz";
-//     char tmp_s[50];
+char* get_random_token() {
 
-//     for (int i = 0; i < 50; ++i) {
-//         tmp_s[i] = alphanum[rand() % (sizeof(alphanum) - 1)];
-//     }
-    
-//     return tmp_s;
-// }
+    static char charset[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";        
+    char randomString[50];           
+    for (int i = 0; i < 50; i++) {            
+        int key = rand() % (int)(sizeof(charset) -1);
+        randomString[i] = charset[key];
+    }
+    return randomString;
+}
 
 int get_user_id(char *token)
 {
@@ -24,10 +23,12 @@ int get_user_id(char *token)
     {
         return 0;
     }
-    if (strcmp("12345", token) == 0)
-    {
-        return 1;
-    }
+    int rc;
+    sqlite3 *db;
+    rc = sqlite3_open("chat-db.db", &db);
+    sqlite3_stmt *stmt;
+
+
     return 0;
 }
 
@@ -37,27 +38,61 @@ cJSON *register_user(cJSON *request, int user_id, http_status *response_status)
     sqlite3 *db;
     rc = sqlite3_open("chat-db.db", &db);
     sqlite3_stmt *stmt;
+    
 
     cJSON *username = cJSON_GetObjectItemCaseSensitive(request, "username");
     cJSON *password = cJSON_GetObjectItemCaseSensitive(request, "password");
 
-    char *sql = "INSERT INTO users(username, password) VALUES(?, ?)";
+    char *sql = "SELECT COUNT(*) FROM users WHERE username LIKE ?";
 
     rc = sqlite3_prepare_v2(db, sql, -1, &stmt, 0);
-
-    
-    if(stmt != NULL) {
+    int count;
+    if(stmt != NULL){
         sqlite3_bind_text(stmt, 1, username->valuestring, -1, SQLITE_TRANSIENT);
-        sqlite3_bind_text(stmt, 2, password->valuestring, -1, SQLITE_TRANSIENT);
         sqlite3_step(stmt);
+        count = sqlite3_column_int(stmt, 0);
         sqlite3_finalize(stmt);
     }
+    if(count == 0){
 
-    cJSON *response_json = cJSON_CreateObject();
-    cJSON_AddNumberToObject(response_json, "id", 1);  //todo pobrac id
-    cJSON_AddStringToObject(response_json, "username", username->valuestring);
-    *response_status = HTTP_OK;
-    return response_json;
+        sqlite3_stmt *stmt2;
+        char *sql2 = "INSERT INTO users(username, password) VALUES(?, ?)";
+        rc = sqlite3_prepare_v2(db, sql2, -1, &stmt2, 0);
+
+        
+        if(stmt2 != NULL) {
+            sqlite3_bind_text(stmt2, 1, username->valuestring, -1, SQLITE_TRANSIENT);
+            sqlite3_bind_text(stmt2, 2, password->valuestring, -1, SQLITE_TRANSIENT);
+            sqlite3_step(stmt2);
+            sqlite3_finalize(stmt2);
+        }
+
+        sqlite3_stmt *stmt3;
+        char *sql3 = "SELECT user_id FROM users WHERE username LIKE ?";
+        rc = sqlite3_prepare_v2(db, sql3, -1, &stmt3, 0);
+
+        int user_id;
+        if(stmt3 != NULL) {
+            sqlite3_bind_text(stmt3, 1, username->valuestring, -1, SQLITE_TRANSIENT);
+            sqlite3_step(stmt3);
+            user_id = sqlite3_column_int(stmt3, 0);
+            sqlite3_finalize(stmt3);
+        }
+
+
+
+        cJSON *response_json = cJSON_CreateObject();
+        cJSON_AddNumberToObject(response_json, "id", 1);
+        cJSON_AddStringToObject(response_json, "username", username->valuestring);
+        *response_status = HTTP_OK;
+        return response_json;
+    }
+    else{
+        cJSON *response_json = cJSON_CreateObject();
+        cJSON_AddStringToObject(response_json, "err", "Username taken");
+        *response_status = HTTP_BAD_REQUEST;
+        return response_json;
+    }
 }
 
 cJSON *login(cJSON *request, int user_id, http_status *response_status)
@@ -65,6 +100,14 @@ cJSON *login(cJSON *request, int user_id, http_status *response_status)
     cJSON *username = cJSON_GetObjectItemCaseSensitive(request, "username");
     cJSON *password = cJSON_GetObjectItemCaseSensitive(request, "password");
 
+
+    int rc;
+    sqlite3 *db;
+    rc = sqlite3_open("chat-db.db", &db);
+    sqlite3_stmt *stmt;
+
+    
+    // char token[50] = get_random_token();
     printf("Username: %s, password: %s\n", username->valuestring, password->valuestring);
 
     cJSON *response_json = cJSON_CreateObject();
@@ -128,8 +171,13 @@ cJSON *get_users_by_username(cJSON *request, int user_id, http_status *response_
                 cJSON_AddNumberToObject(user_json, "user_id", sqlite3_column_int(stmt, 0));
                 cJSON_AddStringToObject(user_json, "username", sqlite3_column_text(stmt, 1));
                 cJSON_AddItemToArray(response_json, user_json);
+                printf("1");
         }
+        printf("end");
         sqlite3_finalize(stmt);
+    }
+    else{
+        printf("Empty");    
     }
     *response_status = HTTP_OK;
     return response_json;

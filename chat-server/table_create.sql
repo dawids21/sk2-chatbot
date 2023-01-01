@@ -21,9 +21,9 @@ CREATE TABLE messages(
     friend_id INTEGER,
     timestamp TEXT);
 
--- CREATE TABLE loogged_in_users(
---     user_id INTEGER,
---     token TEXT);
+CREATE TABLE logged_in_users(
+    user_id INTEGER,
+    token TEXT);
 
 
 
