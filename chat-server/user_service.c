@@ -6,14 +6,25 @@
 #include <stdlib.h>
 
 
-char* get_random_token() {
+
+char* get_random_token(size_t length) {
 
     static char charset[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";        
-    char randomString[50];           
-    for (int i = 0; i < 50; i++) {            
-        int key = rand() % (int)(sizeof(charset) -1);
-        randomString[i] = charset[key];
+    char *randomString = NULL;
+
+    if (length) {
+        randomString = malloc(sizeof(char) * (length +1));
+
+        if (randomString) {            
+            for (int n = 0;n < length;n++) {            
+                int key = rand() % (int)(sizeof(charset) -1);
+                randomString[n] = charset[key];
+            }
+
+            randomString[length] = '\0';
+        }
     }
+
     return randomString;
 }
 
@@ -89,7 +100,7 @@ cJSON *register_user(cJSON *request, int user_id, http_status *response_status)
     }
     else{
         cJSON *response_json = cJSON_CreateObject();
-        cJSON_AddStringToObject(response_json, "err", "Username taken");
+        cJSON_AddStringToObject(response_json, "err_msg", "Username taken");
         *response_status = HTTP_BAD_REQUEST;
         return response_json;
     }
@@ -106,8 +117,27 @@ cJSON *login(cJSON *request, int user_id, http_status *response_status)
     rc = sqlite3_open("chat-db.db", &db);
     sqlite3_stmt *stmt;
 
+    char *sql = "SELECT COUNT(*) FROM users WHERE username LIKE ? AND password LIKE ?";
+    rc = sqlite3_prepare_v2(db, sql, -1, &stmt, 0);
+    int count;
+    if(stmt != NULL){
+        sqlite3_bind_text(stmt, 1, username->valuestring, -1, SQLITE_TRANSIENT);
+        sqlite3_bind_text(stmt, 2, password->valuestring, -1, SQLITE_TRANSIENT);
+        sqlite3_step(stmt);
+        count = sqlite3_column_int(stmt, 0);
+        sqlite3_finalize(stmt);
+    }
+    if(count == 0){
+        cJSON *response_json = cJSON_CreateObject();
+        cJSON_AddStringToObject(response_json, "err_msg", "Wrong username or password");
+        *response_status = HTTP_BAD_REQUEST;
+        return response_json;
+    }
     
-    // char token[50] = get_random_token();
+    
+    char token[51];
+    strcpy(token, get_random_token(50));
+    printf("%s", token);
     printf("Username: %s, password: %s\n", username->valuestring, password->valuestring);
 
     cJSON *response_json = cJSON_CreateObject();

@@ -50,6 +50,8 @@ void *socketThread(void *arg)
 
 int main(int argc, char const *argv[])
 {
+    srand(time(NULL));
+
     signal(SIGINT, int_handler);
     int newSocket;
     struct sockaddr_in serverAddr;
