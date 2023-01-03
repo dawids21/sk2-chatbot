@@ -1,13 +1,9 @@
 <html>
+  <head> </head>
 
-<head>
-</head>
-
-<body>
+  <body>
     <h1>Chat</h1>
-    <ul id="messages">
-
-    </ul>
+    <ul id="messages"></ul>
     <label for="from">From:</label>
     <input id="from" />
     <br />
@@ -22,53 +18,52 @@
     <button id="send">Send</button>
 
     <script>
-        var socket = new WebSocket("ws://127.0.0.1:5000");
+      var socket = new WebSocket("ws://127.0.0.1:1101");
 
-        socket.onmessage = () => {
-            const message = JSON.parse(event.data);
-            const li = document.createElement("li");
-            li.innerText = `Client ${message.from} send ${message.message}`;
-            document.getElementById("messages").appendChild(li);
-        };
+      socket.onmessage = () => {
+        const message = JSON.parse(event.data);
+        const li = document.createElement("li");
+        li.innerText = `Client ${message.from} send ${message.message}`;
+        document.getElementById("messages").appendChild(li);
+      };
 
-        document.getElementById("send").onclick = () => {
-            const from = document.getElementById("from").value;
-            const to = document.getElementById("to").value;
-            const message = document.getElementById("message").value;
-            if (!message || message === "") {
-                return;
-            }
-            if (!from || from === "") {
-                return;
-            }
-            if (!to || to === "") {
-                return;
-            }
-            socket.send(JSON.stringify({
-                operation: "/message",
-                from: parseInt(from),
-                to: parseInt(to),
-                message: message
-            }));
-            const li = document.createElement("li");
-            li.innerText = `Client ${from} send ${message}`;
-            document.getElementById("messages").appendChild(li);
-            document.getElementById("message").value = "";
+      document.getElementById("send").onclick = () => {
+        const from = document.getElementById("from").value;
+        const to = document.getElementById("to").value;
+        const message = document.getElementById("message").value;
+        if (!message || message === "") {
+          return;
         }
-
-        document.getElementById("connect").onclick = () => {
-            const from = document.getElementById("from").value;
-            if (!from || from === "") {
-                return;
-            }
-            socket.send(JSON.stringify({
-                operation: "/start",
-                user_id: parseInt(from),
-                token: "12345"
-            }))
-            document.getElementById("message").value = "";
+        if (!from || from === "") {
+          return;
         }
+        if (!to || to === "") {
+          return;
+        }
+        socket.send(
+          JSON.stringify({
+            operation: "/message",
+            from: parseInt(from),
+            to: parseInt(to),
+            message: message,
+          })
+        );
+      };
+
+      document.getElementById("connect").onclick = () => {
+        const from = document.getElementById("from").value;
+        if (!from || from === "") {
+          return;
+        }
+        socket.send(
+          JSON.stringify({
+            operation: "/start",
+            user_id: parseInt(from),
+            token: "12345",
+          })
+        );
+        document.getElementById("message").value = "";
+      };
     </script>
-</body>
-
+  </body>
 </html>
