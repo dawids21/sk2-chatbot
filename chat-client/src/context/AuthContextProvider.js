@@ -38,13 +38,12 @@ const AuthContextProvider = (props) => {
       return;
     }
     const data = await token.json();
-    const info = await getInfo(data.token);
     setToken(data.token);
     setIsLoggedIn(true);
-    setId(info.id);
-    setUsername(info.username);
-    localStorage.setItem("auth-id", info.id);
-    localStorage.setItem("auth-username", info.username);
+    setId(data.id);
+    setUsername(username);
+    localStorage.setItem("auth-id", data.id);
+    localStorage.setItem("auth-username", username);
     localStorage.setItem("auth-token", data.token);
     navigate("/");
   };
@@ -56,20 +55,6 @@ const AuthContextProvider = (props) => {
     setIsLoggedIn(false);
     setToken("");
     navigate("/login");
-  };
-
-  const getInfo = async (token) => {
-    const response = await fetch(`${backend.url}/info/auth`, {
-      method: "GET",
-      headers: {
-        Authorization: token,
-      },
-    });
-    if (response.status !== 200) {
-      return { id: 1, username: "User" };
-    }
-    const data = await response.json();
-    return data;
   };
 
   return (

@@ -1,44 +1,18 @@
-import { useContext, useEffect, useRef, useState } from "react";
-import backend from "../../config/backend";
+import { useContext, useEffect, useRef } from "react";
 import AuthContext from "../../context/auth-context";
 import MessagesContext from "../../context/messages-context";
 import CenterCircularProgress from "../ui/CenterCircularProgress";
 import Message from "./Message";
 
-const ChatLog = ({ userId }) => {
-  const [username, setUsername] = useState("");
-  const [isUsernameLoading, setIsUsernameLoading] = useState(true);
-  const { token, username: myUsername } = useContext(AuthContext);
+const ChatLog = ({ userId, username }) => {
+  const { username: myUsername } = useContext(AuthContext);
   const messageRef = useRef(null);
   const { messages, isLoadingMessages, getMessages } =
     useContext(MessagesContext);
-  useEffect(() => {
-    const getUser = async () => {
-      setIsUsernameLoading(true);
-      const response = await fetch(`${backend.url}/info`, {
-        method: "POST",
-        body: JSON.stringify({ id: userId }),
-        headers: {
-          Authorization: token,
-        },
-      });
-      if (response.status !== 200) {
-        setUsername("User");
-        setIsUsernameLoading(false);
-        return;
-      }
-      const data = await response.json();
-      setUsername(data.username);
-      setIsUsernameLoading(false);
-    };
-    getUser();
-  }, [userId, token]);
 
   useEffect(() => {
     getMessages(userId);
   }, [userId, getMessages]);
-
-  const isLoading = isUsernameLoading || isLoadingMessages;
 
   const getMessageElements = () => {
     let result = [];
@@ -48,8 +22,8 @@ const ChatLog = ({ userId }) => {
       if (index === messages.length - 1) {
         messageElement = (
           <Message
-            key={message.timestamp}
-            name={message.user_id === userId ? username : myUsername}
+            key={message.id}
+            name={message.from === userId ? username : myUsername}
             timestamp={new Date(message.timestamp)}
             message={message.message}
             ref={messageRef}
@@ -58,8 +32,8 @@ const ChatLog = ({ userId }) => {
       } else {
         messageElement = (
           <Message
-            key={message.timestamp}
-            name={message.user_id === userId ? username : myUsername}
+            key={message.id}
+            name={message.from === userId ? username : myUsername}
             timestamp={new Date(message.timestamp)}
             message={message.message}
           />
@@ -72,10 +46,16 @@ const ChatLog = ({ userId }) => {
 
   useEffect(() => {
     messageRef.current?.scrollIntoView();
-  }, [isLoading, messages]);
+  }, [isLoadingMessages, messages]);
 
   return (
-    <>{isLoading ? <CenterCircularProgress /> : <>{getMessageElements()}</>}</>
+    <>
+      {isLoadingMessages ? (
+        <CenterCircularProgress />
+      ) : (
+        <>{getMessageElements()}</>
+      )}
+    </>
   );
 };
 

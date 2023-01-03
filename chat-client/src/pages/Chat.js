@@ -71,7 +71,12 @@ const Chat = () => {
             }}
           >
             <Box sx={{ overflowY: "auto", flexGrow: 1 }}>
-              <ChatLog userId={userId} />
+              <ChatLog
+                userId={userId}
+                username={
+                  friends.find((friend) => friend.id === userId).username
+                }
+              />
             </Box>
             <NewMessageBox onSendMessage={sendMessageHandler} />
           </Box>

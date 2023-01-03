@@ -71,12 +71,13 @@ const MessagesContextProvider = (props) => {
     socket.onmessage = (event) => {
       const data = JSON.parse(event.data);
       const from = parseInt(data.from);
-      if (from === userId) {
+      if (from === userId || from === id) {
         setMessages((prevMessages) => [
           ...prevMessages,
           {
             id: parseInt(data.id),
-            user_id: parseInt(data.user_id),
+            from: parseInt(data.from),
+            to: parseInt(data.to),
             message: data.message,
             timestamp: data.timestamp,
           },
@@ -90,7 +91,7 @@ const MessagesContextProvider = (props) => {
         });
       }
     };
-  }, [socket, userId]);
+  }, [socket, userId, id]);
 
   const readMessage = (id) => {
     setUnreadMessages((prevUnreadMessages) => {
@@ -116,9 +117,7 @@ const MessagesContextProvider = (props) => {
       socket.send(JSON.stringify(toSend));
     } catch (error) {
       alert("Could not send message", "error");
-      return;
     }
-    setMessages((prevMessages) => [...prevMessages, toSend]);
   };
 
   return (
