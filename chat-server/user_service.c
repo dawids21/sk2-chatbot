@@ -39,8 +39,18 @@ int get_user_id(char *token)
     rc = sqlite3_open("chat-db.db", &db);
     sqlite3_stmt *stmt;
 
-
-    return 0;
+    char *sql = "SELECT user_id FROM logged_in_users WHERE token LIKE ?";
+    rc = sqlite3_prepare_v2(db, sql, -1, &stmt, 0);
+    
+    int user_id;
+    if(stmt != NULL){
+        sqlite3_bind_text(stmt, 1, token, -1, SQLITE_TRANSIENT);
+        sqlite3_step(stmt);
+        user_id = sqlite3_column_int(stmt, 0);
+        sqlite3_finalize(stmt);
+    }
+    printf("%d\n", user_id);
+    return user_id;
 }
 
 cJSON *register_user(cJSON *request, int user_id, http_status *response_status)
@@ -133,15 +143,48 @@ cJSON *login(cJSON *request, int user_id, http_status *response_status)
         *response_status = HTTP_BAD_REQUEST;
         return response_json;
     }
-    
-    
+
+    sqlite3_stmt *stmt2;
+    char *sql2 = "SELECT user_id FROM users WHERE username LIKE ?";
+    rc = sqlite3_prepare_v2(db, sql2, -1, &stmt2, 0);
+    user_id = 0;
+
+    if(stmt2 != NULL){
+        sqlite3_bind_text(stmt2, 1, username->valuestring, -1, SQLITE_TRANSIENT);
+        sqlite3_step(stmt2);
+        user_id = sqlite3_column_int(stmt2, 0);
+        sqlite3_finalize(stmt2);
+    }
+    if(user_id != 0){
+        sqlite3_stmt *stmt3;
+        char *sql3 = "DELETE FROM logged_in_users WHERE user_id = ?";
+        rc = sqlite3_prepare_v2(db, sql3, -1, &stmt3, 0);
+            if(stmt3 != NULL){
+                sqlite3_bind_int(stmt3, 1, user_id);
+                sqlite3_step(stmt3);
+                sqlite3_finalize(stmt3);
+            }
+    }
+
     char token[51];
     strcpy(token, get_random_token(50));
-    printf("%s", token);
-    printf("Username: %s, password: %s\n", username->valuestring, password->valuestring);
+
+    sqlite3_stmt *stmt4;
+    char *sql4 = "INSERT INTO logged_in_users VALUES(?, ?);";
+    rc = sqlite3_prepare_v2(db, sql4, -1, &stmt4, 0);
+    if(stmt4 != NULL){
+        sqlite3_bind_int(stmt4, 1, user_id);
+        sqlite3_bind_text(stmt4, 2, token, -1, SQLITE_TRANSIENT);
+        sqlite3_step(stmt4);
+        sqlite3_finalize(stmt4);
+    }
+   
+    // printf("%s", token);
+    // printf("Username: %s, password: %s\n", username->valuestring, password->valuestring);
 
     cJSON *response_json = cJSON_CreateObject();
-    cJSON_AddStringToObject(response_json, "token", "12345");
+    cJSON_AddNumberToObject(response_json, "user_id", user_id);
+    cJSON_AddStringToObject(response_json, "token", token);
     *response_status = HTTP_OK;
     return response_json;
 }
@@ -177,11 +220,11 @@ cJSON *get_users(cJSON *request, int user_id, http_status *response_status)
 
 cJSON *get_users_by_username(cJSON *request, int user_id, http_status *response_status)
 {
-    // if (user_id == 0)
-    // {
-    //     *response_status = HTTP_UNAUTHORIZED;
-    //     return NULL;
-    // }
+    if (user_id == 0)
+    {
+        *response_status = HTTP_UNAUTHORIZED;
+        return NULL;
+    }
 
     int rc;
     sqlite3 *db;
