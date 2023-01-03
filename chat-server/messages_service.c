@@ -62,10 +62,17 @@ void onmessage(ws_cli_conn_t *client, const unsigned char *msg, uint64_t size, i
     }
     else if (strcmp(operation->valuestring, "/message") == 0)
     {
-        cJSON *to = cJSON_GetObjectItemCaseSensitive(json, "to");
-        int user_id = to->valueint;
-        ws_cli_conn_t **receipent = (ws_cli_conn_t **)ht_get(clients, &user_id, sizeof(int), NULL);
-        ws_sendframe_txt(*receipent, message);
+        cJSON *message_json = add_message(json);
+        int friend_id = cJSON_GetObjectItemCaseSensitive(message_json, "to")->valueint;
+        char *to_send = cJSON_Print(message_json);
+        ws_sendframe_txt(client, to_send);
+        ws_cli_conn_t **receipent = (ws_cli_conn_t **)ht_get(clients, &friend_id, sizeof(int), NULL);
+        if (receipent != NULL)
+        {
+            ws_sendframe_txt(*receipent, to_send);
+        }
+        free(to_send);
+        cJSON_Delete(message_json);
     }
     cJSON_Delete(json);
 }

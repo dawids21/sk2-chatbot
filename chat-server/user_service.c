@@ -286,10 +286,25 @@ cJSON *get_friends(cJSON *request, int user_id, http_status *response_status)
     return response_json;
 }
 
-void add_message(int user_id, int friend_id, char *message)
+cJSON *add_message(cJSON *request)
 {
-    // TODO nie wiem jak to jeszcze będzie wyglądać, póki nie ma web socketów
-    printf("Add message %s from %d to %d", message, user_id, friend_id);
+    cJSON *from = cJSON_GetObjectItemCaseSensitive(request, "from");
+    cJSON *to = cJSON_GetObjectItemCaseSensitive(request, "to");
+    cJSON *message = cJSON_GetObjectItemCaseSensitive(request, "message");
+    cJSON *timestamp = cJSON_GetObjectItemCaseSensitive(request, "timestamp");
+    int user_id = from->valueint;
+    int friend_id = to->valueint;
+    char *message_str = message->valuestring;
+    char *timestamp_str = timestamp->valuestring;
+    printf("Add message %s at %s from %d to %d", message_str, timestamp_str, user_id, friend_id);
+
+    cJSON *message_json = cJSON_CreateObject();
+    cJSON_AddNumberToObject(message_json, "id", 8);
+    cJSON_AddNumberToObject(message_json, "from", user_id);
+    cJSON_AddNumberToObject(message_json, "to", friend_id);
+    cJSON_AddStringToObject(message_json, "message", message_str);
+    cJSON_AddStringToObject(message_json, "timestamp", timestamp_str);
+    return message_json;
 }
 
 cJSON *get_messages(cJSON *request, int user_id, http_status *response_status)
@@ -305,12 +320,16 @@ cJSON *get_messages(cJSON *request, int user_id, http_status *response_status)
 
     cJSON *response_json = cJSON_CreateArray();
     cJSON *message_json = cJSON_CreateObject();
-    cJSON_AddNumberToObject(message_json, "user_id", 1);
+    cJSON_AddNumberToObject(message_json, "id", 1);
+    cJSON_AddNumberToObject(message_json, "from", 1);
+    cJSON_AddNumberToObject(message_json, "to", 3);
     cJSON_AddStringToObject(message_json, "message", "Siema");
     cJSON_AddStringToObject(message_json, "timestamp", "2022-12-19T15:45:33");
     cJSON_AddItemToArray(response_json, message_json);
     message_json = cJSON_CreateObject();
-    cJSON_AddNumberToObject(message_json, "user_id", 3);
+    cJSON_AddNumberToObject(message_json, "id", 2);
+    cJSON_AddNumberToObject(message_json, "from", 3);
+    cJSON_AddNumberToObject(message_json, "to", 1);
     cJSON_AddStringToObject(message_json, "message", "Elo");
     cJSON_AddStringToObject(message_json, "timestamp", "2022-12-19T15:52:41");
     cJSON_AddItemToArray(response_json, message_json);

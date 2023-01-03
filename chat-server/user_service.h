@@ -13,7 +13,7 @@ cJSON *get_users_by_username(cJSON *request, int user_id, http_status *response_
 cJSON *add_friend(cJSON *request, int user_id, http_status *response_status);
 cJSON *delete_friend(cJSON *request, int user_id, http_status *response_status);
 cJSON *get_friends(cJSON *request, int user_id, http_status *response_status);
-void add_message(int user_id, int friend_id, char *message);
+cJSON *add_message(cJSON *request);
 cJSON *get_messages(cJSON *request, int user_id, http_status *response_status);
 
 #endif
