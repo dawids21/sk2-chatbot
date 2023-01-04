@@ -179,8 +179,6 @@ cJSON *login(cJSON *request, int user_id, http_status *response_status)
         sqlite3_finalize(stmt4);
     }
    
-    // printf("%s", token);
-    // printf("Username: %s, password: %s\n", username->valuestring, password->valuestring);
 
     cJSON *response_json = cJSON_CreateObject();
     cJSON_AddNumberToObject(response_json, "user_id", user_id);
