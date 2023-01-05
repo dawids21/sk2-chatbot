@@ -16,9 +16,10 @@ CREATE TABLE friends(
     user2_id INTEGER);
 
 CREATE TABLE messages(
-    message TEXT,
+    message_id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER,
     friend_id INTEGER,
+    message TEXT,
     timestamp TEXT);
 
 CREATE TABLE logged_in_users(
@@ -40,9 +41,9 @@ INSERT INTO friends VALUES(3, 1);
 INSERT INTO friends VALUES(2, 3);
 INSERT INTO friends VALUES(3, 2);
 
-INSERT INTO messages VALUES('Hi', 1, 2, datetime('now', 'localtime'));
-INSERT INTO messages VALUES('Hi2', 2, 1, datetime('now', 'localtime'));
-INSERT INTO messages VALUES('Hello', 1, 3, datetime('now', 'localtime'));
-INSERT INTO messages VALUES('Hello2', 3, 1, datetime('now', 'localtime'));
-INSERT INTO messages VALUES('Whats up', 2, 3, datetime('now', 'localtime'));
-INSERT INTO messages VALUES('Whats up2', 3, 2, datetime('now', 'localtime'));
+INSERT INTO messages(user_id, friend_id, message, timestamp) VALUES(1, 2, 'Hi', datetime('now', 'localtime'));
+INSERT INTO messages(user_id, friend_id, message, timestamp) VALUES(2, 1, 'Hi2', datetime('now', 'localtime'));
+INSERT INTO messages(user_id, friend_id, message, timestamp) VALUES(1, 3, 'Hello', datetime('now', 'localtime'));
+INSERT INTO messages(user_id, friend_id, message, timestamp) VALUES(3, 1, 'Hello2', datetime('now', 'localtime'));
+INSERT INTO messages(user_id, friend_id, message, timestamp) VALUES(2, 3, 'Whats up', datetime('now', 'localtime'));
+INSERT INTO messages(user_id, friend_id, message, timestamp) VALUES(3, 2, 'Whats up2', datetime('now', 'localtime'));
