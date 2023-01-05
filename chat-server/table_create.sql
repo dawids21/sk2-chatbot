@@ -41,9 +41,9 @@ INSERT INTO friends VALUES(3, 1);
 INSERT INTO friends VALUES(2, 3);
 INSERT INTO friends VALUES(3, 2);
 
-INSERT INTO messages(user_id, friend_id, message, timestamp) VALUES(1, 2, 'Hi', datetime('now', 'localtime'));
-INSERT INTO messages(user_id, friend_id, message, timestamp) VALUES(2, 1, 'Hi2', datetime('now', 'localtime'));
-INSERT INTO messages(user_id, friend_id, message, timestamp) VALUES(1, 3, 'Hello', datetime('now', 'localtime'));
-INSERT INTO messages(user_id, friend_id, message, timestamp) VALUES(3, 1, 'Hello2', datetime('now', 'localtime'));
-INSERT INTO messages(user_id, friend_id, message, timestamp) VALUES(2, 3, 'Whats up', datetime('now', 'localtime'));
-INSERT INTO messages(user_id, friend_id, message, timestamp) VALUES(3, 2, 'Whats up2', datetime('now', 'localtime'));
+INSERT INTO messages(user_id, friend_id, message, timestamp) VALUES(1, 2, 'Hi', '2023-01-05T13:35:51');
+INSERT INTO messages(user_id, friend_id, message, timestamp) VALUES(2, 1, 'Hi2', '2023-01-05T13:35:51');
+INSERT INTO messages(user_id, friend_id, message, timestamp) VALUES(1, 3, 'Hello', '2023-01-05T13:35:51');
+INSERT INTO messages(user_id, friend_id, message, timestamp) VALUES(3, 1, 'Hello2', '2023-01-05T13:35:51');
+INSERT INTO messages(user_id, friend_id, message, timestamp) VALUES(2, 3, 'Whats up', '2023-01-05T13:35:51');
+INSERT INTO messages(user_id, friend_id, message, timestamp) VALUES(3, 2, 'Whats up2', '2023-01-05T13:35:51');
