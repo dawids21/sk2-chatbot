@@ -42,14 +42,13 @@ int get_user_id(char *token)
     char *sql = "SELECT user_id FROM logged_in_users WHERE token LIKE ?";
     rc = sqlite3_prepare_v2(db, sql, -1, &stmt, 0);
     
-    int user_id;
+    int user_id = 0;
     if(stmt != NULL){
         sqlite3_bind_text(stmt, 1, token, -1, SQLITE_TRANSIENT);
         sqlite3_step(stmt);
         user_id = sqlite3_column_int(stmt, 0);
         sqlite3_finalize(stmt);
     }
-    printf("%d\n", user_id);
     return user_id;
 }
 
@@ -103,7 +102,7 @@ cJSON *register_user(cJSON *request, int user_id, http_status *response_status)
 
 
         cJSON *response_json = cJSON_CreateObject();
-        cJSON_AddNumberToObject(response_json, "id", 1);
+        cJSON_AddNumberToObject(response_json, "id", user_id);
         cJSON_AddStringToObject(response_json, "username", username->valuestring);
         *response_status = HTTP_OK;
         return response_json;
@@ -189,11 +188,11 @@ cJSON *login(cJSON *request, int user_id, http_status *response_status)
 
 cJSON *get_users(cJSON *request, int user_id, http_status *response_status)
 {
-    // if (user_id == 0)
-    // {
-    //     *response_status = HTTP_UNAUTHORIZED;
-    //     return NULL;
-    // }
+    if (user_id == 0)
+    {
+        *response_status = HTTP_UNAUTHORIZED;
+        return NULL;
+    }
 
     int rc;
     sqlite3 *db;
@@ -274,20 +273,19 @@ cJSON *add_friend(cJSON *request, int user_id, http_status *response_status)
 
     if(stmt != NULL) {
         sqlite3_bind_int(stmt, 1, user_id);
-        sqlite3_bind_int(stmt, 2, friend_id);
+        sqlite3_bind_int(stmt, 2, friend_id->valueint);
         sqlite3_step(stmt);
+        sqlite3_finalize(stmt);
     }
 
     rc = sqlite3_prepare_v2(db, sql, -1, &stmt, 0);
 
     if(stmt != NULL){
         sqlite3_bind_int(stmt, 2, user_id);
-        sqlite3_bind_int(stmt, 1, friend_id);
+        sqlite3_bind_int(stmt, 1, friend_id->valueint);
         sqlite3_step(stmt);
         sqlite3_finalize(stmt);
     }
-
-    printf("Add friend: %d\n", friend_id->valueint);
 
     *response_status = HTTP_OK;
     return NULL;
@@ -301,8 +299,25 @@ cJSON *delete_friend(cJSON *request, int user_id, http_status *response_status)
         return NULL;
     }
 
+    int rc;
+    sqlite3 *db;
+    rc = sqlite3_open("chat-db.db", &db);
+    sqlite3_stmt *stmt;
+
     cJSON *friend_id = cJSON_GetObjectItemCaseSensitive(request, "friend_id");
-    printf("Delete friend: %d\n", friend_id->valueint);
+    char *sql = "DELETE FROM friends WHERE (user1_id = ? AND user2_id = ?) OR (user1_id = ? AND user2_id = ?)";
+    rc = sqlite3_prepare_v2(db, sql, -1, &stmt, 0);
+
+    if(stmt != NULL) {
+        sqlite3_bind_int(stmt, 1, user_id);
+        sqlite3_bind_int(stmt, 2, friend_id->valueint);
+        sqlite3_bind_int(stmt, 4, user_id);
+        sqlite3_bind_int(stmt, 3, friend_id->valueint);
+        sqlite3_step(stmt);
+        sqlite3_finalize(stmt);
+    }
+
+    rc = sqlite3_prepare_v2(db, sql, -1, &stmt, 0);
 
     *response_status = HTTP_OK;
     return NULL;
@@ -315,14 +330,26 @@ cJSON *get_friends(cJSON *request, int user_id, http_status *response_status)
         *response_status = HTTP_UNAUTHORIZED;
         return NULL;
     }
+    int rc;
+    sqlite3 *db;
+    rc = sqlite3_open("chat-db.db", &db);
+    sqlite3_stmt *stmt;
 
-    printf("Get friends\n");
+    char *sql = "SELECT user_id, username from users u, friends f WHERE f.user1_id = ? AND f.user2_id = u.user_id";
+    rc = sqlite3_prepare_v2(db, sql, -1, &stmt, 0);
 
-    cJSON *response_json = cJSON_CreateArray();
-    cJSON *user_json = cJSON_CreateObject();
-    cJSON_AddNumberToObject(user_json, "id", 3);
-    cJSON_AddStringToObject(user_json, "username", "adam");
-    cJSON_AddItemToArray(response_json, user_json);
+   cJSON *response_json = cJSON_CreateArray();
+    if(stmt != NULL){
+            sqlite3_bind_int(stmt, 1, user_id);
+            while (sqlite3_step(stmt) != SQLITE_DONE){
+                cJSON *user_json = cJSON_CreateObject();
+                cJSON_AddNumberToObject(user_json, "user_id", sqlite3_column_int(stmt, 0));
+                cJSON_AddStringToObject(user_json, "username", sqlite3_column_text(stmt, 1));
+                cJSON_AddItemToArray(response_json, user_json);
+            }
+    }
+    sqlite3_finalize(stmt);
+
     *response_status = HTTP_OK;
     return response_json;
 }
