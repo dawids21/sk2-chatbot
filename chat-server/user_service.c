@@ -48,6 +48,7 @@ int get_user_id(char *token)
         user_id = sqlite3_column_int(stmt, 0);
         sqlite3_finalize(stmt);
     }
+    sqlite3_close(db);
     return user_id;
 }
 
@@ -102,13 +103,17 @@ cJSON *register_user(cJSON *request, int user_id, http_status *response_status)
         cJSON *response_json = cJSON_CreateObject();
         cJSON_AddNumberToObject(response_json, "id", user_id);
         cJSON_AddStringToObject(response_json, "username", username->valuestring);
+
+        sqlite3_close(db);
         *response_status = HTTP_OK;
         return response_json;
     }
     else{
         cJSON *response_json = cJSON_CreateObject();
         cJSON_AddStringToObject(response_json, "err_msg", "Username taken");
-        *response_status = HTTP_BAD_REQUEST;
+
+        sqlite3_close(db);
+        *response_status = HTTP_UNAUTHORIZED;
         return response_json;
     }
 }
@@ -135,7 +140,9 @@ cJSON *login(cJSON *request, int user_id, http_status *response_status)
     if(count == 0){
         cJSON *response_json = cJSON_CreateObject();
         cJSON_AddStringToObject(response_json, "err_msg", "Wrong username or password");
-        *response_status = HTTP_BAD_REQUEST;
+
+        sqlite3_close(db);
+        *response_status = HTTP_UNAUTHORIZED;
         return response_json;
     }
 
@@ -178,6 +185,8 @@ cJSON *login(cJSON *request, int user_id, http_status *response_status)
     cJSON *response_json = cJSON_CreateObject();
     cJSON_AddNumberToObject(response_json, "user_id", user_id);
     cJSON_AddStringToObject(response_json, "token", token);
+
+    sqlite3_close(db);
     *response_status = HTTP_OK;
     return response_json;
 }
@@ -206,6 +215,8 @@ cJSON *get_users(cJSON *request, int user_id, http_status *response_status)
             }
     }
     sqlite3_finalize(stmt);
+
+    sqlite3_close(db);
     *response_status = HTTP_OK;
     return response_json;
 }
@@ -240,9 +251,8 @@ cJSON *get_users_by_username(cJSON *request, int user_id, http_status *response_
         printf("end");
         sqlite3_finalize(stmt);
     }
-    else{
-        printf("Empty");    
-    }
+
+    sqlite3_close(db);
     *response_status = HTTP_OK;
     return response_json;
 }
@@ -280,6 +290,7 @@ cJSON *add_friend(cJSON *request, int user_id, http_status *response_status)
         sqlite3_finalize(stmt);
     }
 
+    sqlite3_close(db);
     *response_status = HTTP_OK;
     return NULL;
 }
@@ -311,6 +322,7 @@ cJSON *delete_friend(cJSON *request, int user_id, http_status *response_status)
 
     sqlite3_prepare_v2(db, sql, -1, &stmt, 0);
 
+    sqlite3_close(db);
     *response_status = HTTP_OK;
     return NULL;
 }
@@ -341,6 +353,7 @@ cJSON *get_friends(cJSON *request, int user_id, http_status *response_status)
     }
     sqlite3_finalize(stmt);
 
+    sqlite3_close(db);
     *response_status = HTTP_OK;
     return response_json;
 }
@@ -396,6 +409,7 @@ cJSON *add_message(cJSON *request)
     cJSON_AddStringToObject(message_json, "message", message_str);
     cJSON_AddStringToObject(message_json, "timestamp", timestamp_str);
 
+    sqlite3_close(db);
     return message_json;
 }
 
@@ -434,6 +448,7 @@ cJSON *get_messages(cJSON *request, int user_id, http_status *response_status)
     }
     sqlite3_finalize(stmt);
 
+    sqlite3_close(db);
     *response_status = HTTP_OK;
     return response_json;
 }
