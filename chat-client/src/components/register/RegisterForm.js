@@ -34,8 +34,13 @@ const RegisterForm = () => {
         password: passwordInput.value,
       }),
     });
+    if (response.status === 400) {
+      alert("Username already taken. Try again", "error");
+      return;
+    }
     if (response.status !== 200) {
       alert("Could not register. Try again", "error");
+      return;
     }
     alert("You've registered successfully", "success");
     resetInputs();

@@ -40,9 +40,9 @@ const AuthContextProvider = (props) => {
     const data = await token.json();
     setToken(data.token);
     setIsLoggedIn(true);
-    setId(data.id);
+    setId(data.user_id);
     setUsername(username);
-    localStorage.setItem("auth-id", data.id);
+    localStorage.setItem("auth-id", data.user_id);
     localStorage.setItem("auth-username", username);
     localStorage.setItem("auth-token", data.token);
     navigate("/");

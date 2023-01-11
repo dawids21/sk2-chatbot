@@ -11,12 +11,14 @@ const UserList = ({
   if (users.length === 0) {
     return;
   }
-  const friendIds = friends.map((friend) => friend.id);
+  const friendIds = friends.map((friend) => friend.user_id);
   const addButton = (user) => {
     return (
       <Button
         variant="outlined"
-        onClick={(event) => addFriendHandler(event, user.id, user.username)}
+        onClick={(event) =>
+          addFriendHandler(event, user.user_id, user.username)
+        }
       >
         Add
       </Button>
@@ -27,7 +29,7 @@ const UserList = ({
       <Button
         variant="outlined"
         color="error"
-        onClick={(event) => removeFriendHandler(event, user.id)}
+        onClick={(event) => removeFriendHandler(event, user.user_id)}
       >
         Remove
       </Button>
@@ -52,11 +54,13 @@ const UserList = ({
             cursor: "pointer",
           }}
           elevation={4}
-          key={user.id}
-          onClick={() => handleClick(user.id)}
+          key={user.user_id}
+          onClick={() => handleClick(user.user_id)}
         >
           <Typography variant="h5">{user.username}</Typography>
-          {friendIds.includes(user.id) ? removeButton(user) : addButton(user)}
+          {friendIds.includes(user.user_id)
+            ? removeButton(user)
+            : addButton(user)}
         </Paper>
       ))}
     </>

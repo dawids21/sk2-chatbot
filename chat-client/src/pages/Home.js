@@ -11,7 +11,7 @@ const Home = () => {
   const nameInput = useInput((value) => true);
   const [users, setUsers] = useState([]);
   const [friends, setFriends] = useState([]);
-  const { isLoggedIn, token } = useContext(AuthContext);
+  const { isLoggedIn, token, id } = useContext(AuthContext);
   const alert = useSnackbar();
 
   useEffect(() => {
@@ -52,11 +52,11 @@ const Home = () => {
         return;
       }
       const data = await response.json();
-      setUsers(data);
+      setUsers(data.filter((user) => user.user_id !== id));
     };
     const handler = setTimeout(() => getUsers(nameInput.value), 400);
     return () => clearTimeout(handler);
-  }, [nameInput.value, alert, token]);
+  }, [nameInput.value, alert, token, id]);
 
   const addFriendHandler = async (event, friendId, friendUsername) => {
     event.stopPropagation();
@@ -72,12 +72,11 @@ const Home = () => {
     }
     setFriends((prevFriends) => [
       ...prevFriends,
-      { id: friendId, username: friendUsername },
+      { user_id: friendId, username: friendUsername },
     ]);
   };
 
   const removeFriendHandler = async (event, friendId) => {
-    console.log("remove");
     event.stopPropagation();
     const response = await fetch(`${backend.url}/friends`, {
       method: "DELETE",
@@ -90,7 +89,7 @@ const Home = () => {
       alert("Something went wrong!", "error");
     }
     setFriends((prevFriends) =>
-      prevFriends.filter((friend) => friend.id !== friendId)
+      prevFriends.filter((friend) => friend.user_id !== friendId)
     );
   };
 

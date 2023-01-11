@@ -1,7 +1,7 @@
 import { Paper, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
-const UserList = ({ users, unreadMessages }) => {
+const UserList = ({ users, unreadMessages, current }) => {
   const navigate = useNavigate();
   if (users.length === 0) {
     return;
@@ -16,15 +16,17 @@ const UserList = ({ users, unreadMessages }) => {
             display: "flex",
             justifyContent: "space-between",
             cursor: "pointer",
-            backgroundColor: unreadMessages.includes(user.id)
+            backgroundColor: unreadMessages.includes(user.user_id)
               ? "primary.light"
               : null,
           }}
           elevation={4}
-          key={user.id}
-          onClick={() => navigate(`/chat/${user.id}`)}
+          key={user.user_id}
+          onClick={() => navigate(`/chat/${user.user_id}`)}
         >
-          <Typography variant="h5">{user.username}</Typography>
+          <Typography variant="h6">
+            {current === user.user_id ? <u>{user.username}</u> : user.username}
+          </Typography>
         </Paper>
       ))}
     </>

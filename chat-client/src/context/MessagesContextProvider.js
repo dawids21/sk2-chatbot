@@ -51,9 +51,7 @@ const MessagesContextProvider = (props) => {
         );
       };
 
-      ws.onclose = () => {
-        console.log("closed");
-      };
+      ws.onclose = () => {};
       setSocket(ws);
     }
 

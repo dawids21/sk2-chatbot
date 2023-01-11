@@ -50,16 +50,28 @@ const Chat = () => {
   const sendMessageHandler = (message) => {
     sendMessage(message);
   };
+
+  const getFriendUsername = () => {
+    const friend = friends.find((friend) => friend.user_id === userId);
+    if (!friend) {
+      return "";
+    }
+    return friend.username;
+  };
   return (
     <Grid2 container spacing={2} sx={{ m: 2, mb: 0 }}>
-      <Grid2 xs={2}>
+      <Grid2 sm={4} md={3} lg={2}>
         {isLoading ? (
           <CenterCircularProgress />
         ) : (
-          <UserList users={friends} unreadMessages={unreadMessages} />
+          <UserList
+            users={friends}
+            unreadMessages={unreadMessages}
+            current={userId}
+          />
         )}
       </Grid2>
-      <Grid2 xs={10}>
+      <Grid2 sm={8} md={9} lg={10}>
         {userId ? (
           <Box
             sx={{
@@ -71,12 +83,7 @@ const Chat = () => {
             }}
           >
             <Box sx={{ overflowY: "auto", flexGrow: 1 }}>
-              <ChatLog
-                userId={userId}
-                username={
-                  friends.find((friend) => friend.id === userId).username
-                }
-              />
+              <ChatLog userId={userId} username={getFriendUsername()} />
             </Box>
             <NewMessageBox onSendMessage={sendMessageHandler} />
           </Box>

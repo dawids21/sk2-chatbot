@@ -113,7 +113,7 @@ cJSON *register_user(cJSON *request, int user_id, http_status *response_status)
         cJSON_AddStringToObject(response_json, "err_msg", "Username taken");
 
         sqlite3_close(db);
-        *response_status = HTTP_UNAUTHORIZED;
+        *response_status = HTTP_BAD_REQUEST;
         return response_json;
     }
 }
@@ -169,7 +169,9 @@ cJSON *login(cJSON *request, int user_id, http_status *response_status)
     }
 
     char token[51];
-    strcpy(token, get_random_token(50));
+    char *random_token = get_random_token(50);
+    strcpy(token, random_token);
+    free(random_token);
 
     sqlite3_stmt *stmt4;
     char *sql4 = "INSERT INTO logged_in_users VALUES(?, ?);";
@@ -235,7 +237,7 @@ cJSON *get_users_by_username(cJSON *request, int user_id, http_status *response_
 
     cJSON *username = cJSON_GetObjectItemCaseSensitive(request, "username");
 
-    char *sql = "SELECT user_id, username FROM users WHERE username LIKE ?";
+    char *sql = "SELECT user_id, username FROM users WHERE username LIKE ? || '%'";
     sqlite3_prepare_v2(db, sql, -1, &stmt, 0);
     cJSON *response_json = cJSON_CreateArray();
     if(stmt != NULL) {
