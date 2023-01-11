@@ -10,7 +10,9 @@ const Message = forwardRef(({ name, timestamp, message }, ref) => {
         day: "numeric",
         hour: "numeric",
         minute: "numeric",
-      })}): ${message}`}
+      })})`}
+      <br />
+      {message}
     </Typography>
   );
 });
