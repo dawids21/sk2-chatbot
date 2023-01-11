@@ -45,9 +45,16 @@
             operation: "/message",
             from: parseInt(from),
             to: parseInt(to),
+            id: Math.random() * (1000000 - 1000) + 1000,
+            user_id: parseInt(from),
             message: message,
+            timestamp: new Date(),
           })
         );
+        const li = document.createElement("li");
+        li.innerText = `Client ${from} send ${message}`;
+        document.getElementById("messages").appendChild(li);
+        document.getElementById("message").value = "";
       };
 
       document.getElementById("connect").onclick = () => {
@@ -58,8 +65,7 @@
         socket.send(
           JSON.stringify({
             operation: "/start",
-            user_id: parseInt(from),
-            token: "12345",
+            token: from,
           })
         );
         document.getElementById("message").value = "";

@@ -40,15 +40,15 @@ const AppBar = () => {
     buttons = [
       {
         name: "Chat",
-        action: () => navigate("/chat")
+        action: () => navigate("/chat"),
       },
       {
         name: "Logout",
         action: () => {
-          navigate("/")
+          navigate("/");
           onLogout();
-        }
-      }
+        },
+      },
     ];
   }
 

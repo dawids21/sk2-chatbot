@@ -1,19 +1,27 @@
-import { Box, TextField } from "@mui/material";
+import { Box } from "@mui/material";
 import Grid2 from "@mui/material/Unstable_Grid2";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import ChatLog from "../components/chat/ChatLog";
+import NewMessageBox from "../components/chat/NewMessageBox";
 import UserList from "../components/chat/UserList";
 import CenterCircularProgress from "../components/ui/CenterCircularProgress";
 import backend from "../config/backend";
 import AuthContext from "../context/auth-context";
+import MessagesContext from "../context/messages-context";
 import useSnackbar from "../hooks/use-snackbar";
 
 const Chat = () => {
-  const { userId } = useParams();
+  const { userId: userIdStr } = useParams();
+  const userId = useMemo(
+    () => (userIdStr !== undefined ? parseInt(userIdStr) : null),
+    [userIdStr]
+  );
   const [friends, setFriends] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const { isLoggedIn, token } = useContext(AuthContext);
+  const { unreadMessages, readMessage, sendMessage } =
+    useContext(MessagesContext);
   const alert = useSnackbar();
   useEffect(() => {
     const getFriends = async () => {
@@ -34,13 +42,25 @@ const Chat = () => {
     };
     getFriends();
   }, [alert, isLoggedIn, token]);
+
+  useEffect(() => {
+    readMessage(userId);
+  }, [userId, readMessage]);
+
+  const sendMessageHandler = (message) => {
+    sendMessage(message);
+  };
   return (
     <Grid2 container spacing={2} sx={{ m: 2, mb: 0 }}>
       <Grid2 xs={2}>
-        {isLoading ? <CenterCircularProgress /> : <UserList users={friends} />}
+        {isLoading ? (
+          <CenterCircularProgress />
+        ) : (
+          <UserList users={friends} unreadMessages={unreadMessages} />
+        )}
       </Grid2>
       <Grid2 xs={10}>
-        {userId !== undefined ? (
+        {userId ? (
           <Box
             sx={{
               overflow: "hidden",
@@ -51,15 +71,14 @@ const Chat = () => {
             }}
           >
             <Box sx={{ overflowY: "auto", flexGrow: 1 }}>
-              <ChatLog userId={userId} />
+              <ChatLog
+                userId={userId}
+                username={
+                  friends.find((friend) => friend.id === userId).username
+                }
+              />
             </Box>
-            <TextField
-              margin="normal"
-              id="message"
-              type="text"
-              fullWidth
-              variant="outlined"
-            />
+            <NewMessageBox onSendMessage={sendMessageHandler} />
           </Box>
         ) : null}
       </Grid2>
